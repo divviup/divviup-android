@@ -1,0 +1,27 @@
+name: ci
+
+on:
+  push:
+    branches:
+    - main
+    - release/**
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Setup Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: temurin
+        java-version: "17"
+        check-latest: false
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2
+    - name: Build and test
+      run: ./gradlew build
+      # Note that `connectedCheck` is skipped for now, because setting up an
+      # emulator is nontrivial.
