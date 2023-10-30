@@ -23,4 +23,10 @@ public class ExampleInstrumentedTest {
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         assertEquals("org.divviup.android.test", appContext.getPackageName());
     }
+
+    @Test
+    public void callJNI() {
+        NativeLib lib = new NativeLib();
+        assertEquals("Hello from C++", lib.stringFromJNI());
+    }
 }
