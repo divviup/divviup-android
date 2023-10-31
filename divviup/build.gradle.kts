@@ -7,7 +7,7 @@ android {
     namespace = "org.divviup.android"
     compileSdk = 33
 
-    ndkVersion = "25.1.8937393"
+    ndkVersion = "26.1.10909125"
 
     defaultConfig {
         minSdk = 21
