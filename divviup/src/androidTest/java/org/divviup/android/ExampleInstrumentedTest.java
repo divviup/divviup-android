@@ -27,6 +27,6 @@ public class ExampleInstrumentedTest {
     @Test
     public void callJNI() {
         NativeLib lib = new NativeLib();
-        assertEquals("Hello from C++", lib.stringFromJNI());
+        assertEquals("Hello from Rust", lib.stringFromJNI());
     }
 }
