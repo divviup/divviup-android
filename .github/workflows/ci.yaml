@@ -8,7 +8,7 @@ on:
   pull_request:
 
 jobs:
-  check:
+  build:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -21,6 +21,8 @@ jobs:
         check-latest: false
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
+      with:
+        dependency-graph: generate-and-submit
     - name: Setup Rust
       id: rust-toolchain
       uses: dtolnay/rust-toolchain@stable
@@ -35,3 +37,10 @@ jobs:
       run: ./gradlew build
       # Note that `connectedCheck` is skipped for now, because setting up an
       # emulator is nontrivial.
+
+  dependency-review:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Dependency review
+      uses: actions/dependency-review-action@v3
