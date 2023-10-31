@@ -1,0 +1,31 @@
+version: 2
+
+updates:
+  - package-ecosystem: gradle
+    directory: /
+    schedule:
+      interval: weekly
+    target-branch: main
+
+  - package-ecosystem: cargo
+    directory: divviup/rust
+    schedule:
+      interval: weekly
+    ignore:
+      - dependency-name: prio
+        update-types:
+          - version-update:semver-minor
+      - dependency-name: janus_*
+        update-types:
+          - version-update:semver-minor
+    groups:
+      janus:
+        patterns:
+          - janus_*
+    target-branch: main
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    target-branch: main
