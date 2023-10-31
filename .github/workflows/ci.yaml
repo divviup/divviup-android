@@ -22,9 +22,15 @@ jobs:
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
     - name: Setup Rust
+      id: rust-toolchain
       uses: dtolnay/rust-toolchain@stable
       with:
         targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
+    - name: Rust caching
+      uses: Swatinem/rust-cache@v2
+      with:
+        key: ${{ steps.rust-toolchain.outputs.cachekey }}
+        workspaces: divviup/rust
     - name: Build and test
       run: ./gradlew build
       # Note that `connectedCheck` is skipped for now, because setting up an
