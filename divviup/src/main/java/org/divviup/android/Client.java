@@ -14,7 +14,9 @@ public class Client {
     private static final String HPKE_CONFIG_LIST_CONTENT_TYPE = "application/dap-hpke-config-list";
     private static final String REPORT_CONTENT_TYPE = "application/dap-report";
 
-    private static boolean isLibraryLoaded = false;
+    static {
+        System.loadLibrary("divviup_android");
+    }
 
     private final URI leaderEndpoint, helperEndpoint;
     private final TaskId taskId;
@@ -29,12 +31,6 @@ public class Client {
             long timePrecisionSeconds,
             VDAF vdaf
     ) {
-        if (!isLibraryLoaded) {
-            // Load the native library upon first use.
-            System.loadLibrary("divviup_android");
-            isLibraryLoaded = true;
-        }
-
         if (timePrecisionSeconds <= 0) {
             throw new IllegalArgumentException("timePrecisionSeconds must be positive");
         }
