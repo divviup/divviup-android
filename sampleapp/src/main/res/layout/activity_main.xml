@@ -55,7 +55,8 @@
             android:layout_weight="1"
             android:ems="10"
             android:hint="Time precision (s)"
-            android:inputType="number" />
+            android:inputType="number"
+            android:importantForAutofill="no" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
