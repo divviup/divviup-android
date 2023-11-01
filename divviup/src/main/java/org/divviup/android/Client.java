@@ -8,7 +8,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.util.Calendar;
 
 public class Client {
     private static final String HPKE_CONFIG_LIST_CONTENT_TYPE = "application/dap-hpke-config-list";
@@ -135,7 +134,7 @@ public class Client {
     }
 
     private long reportTimestamp() {
-        long seconds = Calendar.getInstance().getTimeInMillis() / 1000L;
+        long seconds = System.currentTimeMillis() / 1000L;
         return seconds - (seconds % timePrecisionSeconds);
     }
 
