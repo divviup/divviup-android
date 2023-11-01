@@ -84,6 +84,7 @@ public class Client {
         connection.setRequestProperty("User-Agent", getUserAgent());
         connection.setRequestProperty("Content-Type", REPORT_CONTENT_TYPE);
         connection.setDoOutput(true);
+        connection.setFixedLengthStreamingMode(report.length);
         connection.connect();
         OutputStream out = connection.getOutputStream();
         IOUtils.write(report, out);
