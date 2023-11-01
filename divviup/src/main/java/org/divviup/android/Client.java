@@ -9,7 +9,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 
-public class Client {
+public class Client<M> {
     private static final String HPKE_CONFIG_LIST_CONTENT_TYPE = "application/dap-hpke-config-list";
     private static final String REPORT_CONTENT_TYPE = "application/dap-report";
 
@@ -41,16 +41,16 @@ public class Client {
         this.vdaf = vdaf;
     }
 
-    public static Client createPrio3Count(
+    public static Client<Boolean> createPrio3Count(
             URI leaderEndpoint,
             URI helperEndpoint,
             TaskId taskId,
             long timePrecisionSeconds
     ) {
-        return new Client(leaderEndpoint, helperEndpoint, taskId, timePrecisionSeconds, VDAF.PRIO3COUNT);
+        return new Client<>(leaderEndpoint, helperEndpoint, taskId, timePrecisionSeconds, VDAF.PRIO3COUNT);
     }
 
-    public void sendMeasurement(Object measurement) throws IOException {
+    public void sendMeasurement(M measurement) throws IOException {
         HPKEConfigList leaderConfigList = this.fetchHPKEConfigList(this.leaderEndpoint, this.taskId);
         HPKEConfigList helperConfigList = this.fetchHPKEConfigList(this.helperEndpoint, this.taskId);
         long timestamp = this.reportTimestamp();

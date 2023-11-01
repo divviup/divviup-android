@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             Handler handler = new Handler(Looper.getMainLooper());
 
-            Client client = Client.createPrio3Count(leaderEndpoint, helperEndpoint, taskId, timePrecisionSeconds);
+            Client<Boolean> client = Client.createPrio3Count(leaderEndpoint, helperEndpoint, taskId, timePrecisionSeconds);
             try {
                 client.sendMeasurement(measurement);
                 handler.post(
