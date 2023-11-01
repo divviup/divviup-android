@@ -6,8 +6,9 @@ use janus_messages::{
     ReportId, ReportMetadata, Role, TaskId, Time,
 };
 use jni::{
-    objects::{JByteArray, JClass, ReleaseMode},
-    sys::{jboolean, jbyteArray, jlong},
+    descriptors::Desc,
+    objects::{JByteArray, JClass, JThrowable, ReleaseMode},
+    sys::{jboolean, jbyteArray, jlong, jobject},
     JNIEnv,
 };
 use prio::{
@@ -30,25 +31,31 @@ pub extern "system" fn Java_org_divviup_android_Client_prepareReportPrio3Count<'
     timestamp: jlong,
     measurement: jboolean,
 ) -> jbyteArray {
-    let report = match prepare_report_prio3count_inner(
-        &task_id_byte_array,
-        &leader_hpke_config_list_byte_array,
-        &helper_hpke_config_list_byte_array,
-        timestamp,
-        measurement,
-        &mut env,
-    ) {
-        Ok(report) => report,
-        Err(e) => {
-            let _ = env.throw(e);
-            return ptr::null_mut();
-        }
-    };
+    jni_try(&mut env, |env: &mut JNIEnv<'_>| {
+        let report = prepare_report_prio3count_inner(
+            &task_id_byte_array,
+            &leader_hpke_config_list_byte_array,
+            &helper_hpke_config_list_byte_array,
+            timestamp,
+            measurement,
+            env,
+        )?;
+        return_new_byte_array(&report, env)
+    })
+}
 
-    match return_new_byte_array(&report, &mut env) {
-        Ok(array) => array,
-        Err(e) => {
-            let _ = env.throw(e);
+/// Runs a fallible closure that returns a jobject, and transforms an error result into a thrown
+/// exception, with a message provided from the error.
+fn jni_try<'local, F, E>(env: &mut JNIEnv<'local>, mut f: F) -> jobject
+where
+    F: FnMut(&mut JNIEnv<'local>) -> Result<jobject, E>,
+    E: Desc<'local, JThrowable<'local>>,
+{
+    let result = f(env);
+    match result {
+        Ok(object) => object,
+        Err(error) => {
+            let _ = env.throw(error);
             ptr::null_mut()
         }
     }
