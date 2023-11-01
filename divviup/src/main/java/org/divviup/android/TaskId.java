@@ -5,13 +5,18 @@ import android.util.Base64;
 public class TaskId {
     private final byte[] bytes;
 
-    public TaskId(byte[] bytes) {
+    private TaskId(byte[] bytes) {
         if (bytes.length != 32) {
             throw new IllegalArgumentException("TaskId must be 32 bytes long");
         }
         this.bytes = bytes;
     }
 
+    /**
+     * Encodes a task ID into its textual representation.
+     *
+     * @return  the task ID in un-padded base64url form
+     */
     public String encodeToString() {
         return Base64.encodeToString(
                 this.bytes,
@@ -19,6 +24,12 @@ public class TaskId {
         );
     }
 
+    /**
+     * Parses a task ID from its textual representation, as seen in DAP URLs.
+     *
+     * @param input the task ID in un-padded base64url form
+     * @return  the task ID
+     */
     public static TaskId parse(String input) {
         byte[] bytes = Base64.decode(
                 input,
@@ -27,7 +38,13 @@ public class TaskId {
         return new TaskId(bytes);
     }
 
-    public byte[] toBytes() {
+    /**
+     * Gets the byte array representation of this task ID. This array must not be modified, as it
+     * will be shared with native code.
+     *
+     * @return  the task ID as an array of 32 bytes
+     */
+    byte[] toBytes() {
         return this.bytes;
     }
 }
