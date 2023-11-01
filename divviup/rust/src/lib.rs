@@ -235,34 +235,6 @@ unsafe fn decode_hpke_config_list<'local, 'a>(
     HpkeConfigList::get_decoded(bytes).map_err(|e| e.to_string())
 }
 
-/// Copy a byte slice to a Java byte[] array. This returns an error if the argument is null.
-///
-/// # Safety
-///
-/// There must not be any data races on the `byte[]` array, from either Java or Rust.
-///
-/// This function creates an [`AutoElements`][jni::objects::AutoElements] with the [`JByteArray`],
-/// and no other [`AutoElements`][jni::objects::AutoElements] or
-/// [`AutoElementsCritical`][jni::objects::AutoElementsCritical] may alias the array.
-unsafe fn write_byte_array<'local, 'a>(
-    array: &'a JByteArray<'local>,
-    data: &[u8],
-    env: &'a mut JNIEnv<'local>,
-) -> Result<(), jni::errors::Error> {
-    // Safety: All safety requirements of get_array_elements() are imposed on the caller. The [u8]
-    // mutable slice points to the same memory as the [i8] slice, and the two have the same memory
-    // layout. The two mutable slices are not in use at the same time. The backing memory is managed
-    // by the JVM. The memory is valid for long enough because it is only released when the
-    // `AutoElements` struct is dropped, which happens after the last use of the slices.
-    let mut elements = env.get_array_elements(array, ReleaseMode::CopyBack)?;
-    let signed_slice: &mut [i8] = &mut elements[..];
-    let len = signed_slice.len();
-    let mut_slice: &mut [u8] = slice::from_raw_parts_mut(signed_slice.as_ptr() as *mut u8, len);
-    mut_slice.copy_from_slice(data);
-    elements.commit()?;
-    Ok(())
-}
-
 /// Creates a new byte[] array, copies the provided data into it, and returns a raw JNI pointer to
 /// the array. This pointer is intended to be returned from a JNI method.
 ///
@@ -276,10 +248,25 @@ fn return_new_byte_array(data: &[u8], env: &mut JNIEnv<'_>) -> Result<jbyteArray
 
     let byte_array = env.new_byte_array(length).map_err(|e| e.to_string())?;
 
-    // Safety: there are no races on this array, and it will not be aliased, because it is newly
-    // created. The `AutoElements` will release its reference before the array is returned to Java
-    // code.
-    unsafe { write_byte_array(&byte_array, data, env) }.map_err(|e| e.to_string())?;
+    // Start a new scope for the AutoElements. We need to drop it before calling into_raw() on the
+    // byte array, as it borrows the byte array.
+    {
+        // Safety: There are no races on this array, and it will not be aliased, because it is newly
+        // created. The `AutoElements` will release its reference before the array is returned to
+        // Java code. The [u8] mutable slice points to the same memory as the [i8] slice, and the
+        // two have the same memory layout. The two mutable slices are not in use at the same time.
+        // The backing memory is managed by the JVM. The memory is valid for long enough because it
+        // is only released when the `AutoElements` struct is dropped, which happens after the last
+        // use of the slices.
+        let mut elements = unsafe { env.get_array_elements(&byte_array, ReleaseMode::CopyBack) }
+            .map_err(|e| e.to_string())?;
+        let signed_slice: &mut [i8] = &mut elements[..];
+        let len = signed_slice.len();
+        let mut_slice: &mut [u8] =
+            unsafe { slice::from_raw_parts_mut(signed_slice.as_ptr() as *mut u8, len) };
+        mut_slice.copy_from_slice(data);
+        elements.commit().map_err(|e| e.to_string())?;
+    }
 
     Ok(byte_array.into_raw())
 }
