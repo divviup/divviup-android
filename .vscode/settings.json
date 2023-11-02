@@ -1,0 +1,5 @@
+{
+    "rust-analyzer.linkedProjects": [
+        "divviup/rust/Cargo.toml"
+    ]
+}

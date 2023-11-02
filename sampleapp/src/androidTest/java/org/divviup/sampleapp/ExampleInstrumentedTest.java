@@ -1,4 +1,4 @@
-package org.divviup.android;
+package org.divviup.sampleapp;
 
 import android.content.Context;
 
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
     public void useAppContext() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("org.divviup.android.test", appContext.getPackageName());
+        assertEquals("org.divviup.sampleapp", appContext.getPackageName());
     }
 }
