@@ -7,7 +7,7 @@ use janus_messages::{
 };
 use jni::{
     descriptors::Desc,
-    objects::{JByteArray, JClass, JThrowable, ReleaseMode},
+    objects::{JByteArray, JClass, JLongArray, JThrowable, ReleaseMode},
     sys::{jboolean, jbyteArray, jlong, jobject},
     JNIEnv,
 };
@@ -37,6 +37,99 @@ pub extern "system" fn Java_org_divviup_android_Client_prepareReportPrio3Count<'
             &leader_hpke_config_list_byte_array,
             &helper_hpke_config_list_byte_array,
             timestamp,
+            measurement,
+            env,
+        )?;
+        return_new_byte_array(&report, env)
+    })
+}
+
+/// JNI entry point to prepare a Prio3Sum report.
+///
+/// Note that the timestamp argument should already be rounded down according to the DAP task's
+/// time_precision.
+#[no_mangle]
+pub extern "system" fn Java_org_divviup_android_Client_prepareReportPrio3Sum<'local>(
+    mut env: JNIEnv<'local>,
+    _this: JClass<'local>,
+    task_id_byte_array: JByteArray<'local>,
+    leader_hpke_config_list_byte_array: JByteArray<'local>,
+    helper_hpke_config_list_byte_array: JByteArray<'local>,
+    timestamp: jlong,
+    bits: jlong,
+    measurement: jlong,
+) -> jbyteArray {
+    jni_try(&mut env, |env: &mut JNIEnv<'_>| {
+        let report = prepare_report_prio3sum_inner(
+            &task_id_byte_array,
+            &leader_hpke_config_list_byte_array,
+            &helper_hpke_config_list_byte_array,
+            timestamp,
+            bits,
+            measurement,
+            env,
+        )?;
+        return_new_byte_array(&report, env)
+    })
+}
+
+/// JNI entry point to prepare a Prio3SumVec report.
+///
+/// Note that the timestamp argument should already be rounded down according to the DAP task's
+/// time_precision.
+#[no_mangle]
+pub extern "system" fn Java_org_divviup_android_Client_prepareReportPrio3SumVec<'local>(
+    mut env: JNIEnv<'local>,
+    _this: JClass<'local>,
+    task_id_byte_array: JByteArray<'local>,
+    leader_hpke_config_list_byte_array: JByteArray<'local>,
+    helper_hpke_config_list_byte_array: JByteArray<'local>,
+    timestamp: jlong,
+    length: jlong,
+    bits: jlong,
+    chunk_length: jlong,
+    measurement: JLongArray<'local>,
+) -> jbyteArray {
+    jni_try(&mut env, |env: &mut JNIEnv<'_>| {
+        let report = prepare_report_prio3sumvec_inner(
+            &task_id_byte_array,
+            &leader_hpke_config_list_byte_array,
+            &helper_hpke_config_list_byte_array,
+            timestamp,
+            length,
+            bits,
+            chunk_length,
+            &measurement,
+            env,
+        )?;
+        return_new_byte_array(&report, env)
+    })
+}
+
+/// JNI entry point to prepare a Prio3Histogram report.
+///
+/// Note that the timestamp argument should already be rounded down according to the DAP task's
+/// time_precision.
+#[no_mangle]
+pub extern "system" fn Java_org_divviup_android_Client_prepareReportPrio3Histogram<'local>(
+    mut env: JNIEnv<'local>,
+    _this: JClass<'local>,
+    task_id_byte_array: JByteArray<'local>,
+    leader_hpke_config_list_byte_array: JByteArray<'local>,
+    helper_hpke_config_list_byte_array: JByteArray<'local>,
+    timestamp: jlong,
+    length: jlong,
+    chunk_length: jlong,
+    measurement: jlong,
+) -> jbyteArray {
+    jni_try(&mut env, |env: &mut JNIEnv<'_>| {
+        let report = prepare_report_prio3histogram_inner(
+            &task_id_byte_array,
+            &leader_hpke_config_list_byte_array,
+            &helper_hpke_config_list_byte_array,
+            timestamp,
+            length,
+            chunk_length,
             measurement,
             env,
         )?;
@@ -75,6 +168,115 @@ fn prepare_report_prio3count_inner<'local, 'a>(
 ) -> Result<Vec<u8>, String> {
     let vdaf = Prio3::new_count(2).map_err(|e| e.to_string())?;
     let measurement = measurement as u64;
+    prepare_report_generic(
+        task_id_byte_array,
+        leader_hpke_config_list_byte_array,
+        helper_hpke_config_list_byte_array,
+        timestamp,
+        vdaf,
+        &measurement,
+        env,
+    )
+}
+
+/// Shard a Prio3Sum measurement, and construct a DAP report.
+///
+/// This is separated from [`Java_org_divviup_android_Client_prepareReportPrio3Sum`] to simplify
+/// error handling.
+fn prepare_report_prio3sum_inner<'local, 'a>(
+    task_id_byte_array: &'a JByteArray<'local>,
+    leader_hpke_config_list_byte_array: &'a JByteArray<'local>,
+    helper_hpke_config_list_byte_array: &'a JByteArray<'local>,
+    timestamp: jlong,
+    bits: jlong,
+    measurement: jlong,
+    env: &'a mut JNIEnv<'local>,
+) -> Result<Vec<u8>, String> {
+    let bits = bits
+        .try_into()
+        .map_err(|_| "invalid bits parameter".to_string())?;
+    let vdaf = Prio3::new_sum(2, bits).map_err(|e| e.to_string())?;
+    let measurement = measurement
+        .try_into()
+        .map_err(|_| "invalid measurement".to_string())?;
+    prepare_report_generic(
+        task_id_byte_array,
+        leader_hpke_config_list_byte_array,
+        helper_hpke_config_list_byte_array,
+        timestamp,
+        vdaf,
+        &measurement,
+        env,
+    )
+}
+
+/// Shard a Prio3SumVec measurement, and construct a DAP report.
+///
+/// This is separated from [`Java_org_divviup_android_Client_prepareReportPrio3SumVec`] to simplify
+/// error handling.
+#[allow(clippy::too_many_arguments)]
+fn prepare_report_prio3sumvec_inner<'local, 'a>(
+    task_id_byte_array: &'a JByteArray<'local>,
+    leader_hpke_config_list_byte_array: &'a JByteArray<'local>,
+    helper_hpke_config_list_byte_array: &'a JByteArray<'local>,
+    timestamp: jlong,
+    length: jlong,
+    bits: jlong,
+    chunk_length: jlong,
+    measurement: &'a JLongArray<'local>,
+    env: &'a mut JNIEnv<'local>,
+) -> Result<Vec<u8>, String> {
+    let length = length
+        .try_into()
+        .map_err(|_| "invalid length parameter".to_string())?;
+    let bits = bits
+        .try_into()
+        .map_err(|_| "invalid bits parameter".to_string())?;
+    let chunk_length = chunk_length
+        .try_into()
+        .map_err(|_| "invalid chunk_length parameter".to_string())?;
+    let vdaf = Prio3::new_sum_vec(2, bits, length, chunk_length).map_err(|e| e.to_string())?;
+
+    // Safety: The copy of the measurement array is not mutated again from the Java side once it is
+    // passed in. Only one `AutoElements` is constructed from it, in this call.
+    let measurement = unsafe { convert_sumvec_measurement(measurement, env)? };
+
+    prepare_report_generic(
+        task_id_byte_array,
+        leader_hpke_config_list_byte_array,
+        helper_hpke_config_list_byte_array,
+        timestamp,
+        vdaf,
+        &measurement,
+        env,
+    )
+}
+
+/// Shard a Prio3Histogram measurement, and construct a DAP report.
+///
+/// This is separated from [`Java_org_divviup_android_Client_prepareReportPrio3Histogram`] to
+/// simplify error handling.
+#[allow(clippy::too_many_arguments)]
+fn prepare_report_prio3histogram_inner<'local, 'a>(
+    task_id_byte_array: &'a JByteArray<'local>,
+    leader_hpke_config_list_byte_array: &'a JByteArray<'local>,
+    helper_hpke_config_list_byte_array: &'a JByteArray<'local>,
+    timestamp: jlong,
+    length: jlong,
+    chunk_length: jlong,
+    measurement: jlong,
+    env: &'a mut JNIEnv<'local>,
+) -> Result<Vec<u8>, String> {
+    let length = length
+        .try_into()
+        .map_err(|_| "invalid length parameter".to_string())?;
+    let chunk_length = chunk_length
+        .try_into()
+        .map_err(|_| "invalid chunk_length parameter".to_string())?;
+    let vdaf = Prio3::new_histogram(2, length, chunk_length).map_err(|e| e.to_string())?;
+    let measurement = measurement
+        .try_into()
+        .map_err(|_| "invalid measurement".to_string())?;
     prepare_report_generic(
         task_id_byte_array,
         leader_hpke_config_list_byte_array,
@@ -233,6 +435,31 @@ unsafe fn decode_hpke_config_list<'local, 'a>(
     let bytes: &[u8] =
         slice::from_raw_parts(signed_slice.as_ptr() as *const u8, signed_slice.len());
     HpkeConfigList::get_decoded(bytes).map_err(|e| e.to_string())
+}
+
+/// Read from a Java long[] array, and convert each element to a `u128`. This returns an error if
+/// the argument is null, or if any element is negative.
+///
+/// # Safety
+///
+/// There must not be any data races on the `byte[]` array, from either Java or Rust.
+///
+/// This function creates an [`AutoElements`][jni::objects::AutoElements] with the [`JByteArray`],
+/// and no other [`AutoElements`][jni::objects::AutoElements] or
+/// [`AutoElementsCritical`][jni::objects::AutoElementsCritical] may alias the array.
+unsafe fn convert_sumvec_measurement<'local, 'a>(
+    array: &'a JLongArray<'local>,
+    env: &'a mut JNIEnv<'local>,
+) -> Result<Vec<u128>, String> {
+    // Safety: All safety requirements of get_array_elements() are imposed on the caller.
+    let elements = env
+        .get_array_elements(array, ReleaseMode::NoCopyBack)
+        .map_err(|e| e.to_string())?;
+    elements
+        .iter()
+        .map(|value| u128::try_from(*value))
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|_| "invalid measurement".to_string())
 }
 
 /// Creates a new byte[] array, copies the provided data into it, and returns a raw JNI pointer to
