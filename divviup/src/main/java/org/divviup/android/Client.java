@@ -30,6 +30,14 @@ public class Client<M> {
             long timePrecisionSeconds,
             VDAF vdaf
     ) {
+        if (!leaderEndpoint.getScheme().equals("https") && !leaderEndpoint.getScheme().equals("http")) {
+            throw new IllegalArgumentException("leaderEndpoint must be an HTTP or HTTPS URI");
+        }
+
+        if (!helperEndpoint.getScheme().equals("https") && !helperEndpoint.getScheme().equals("http")) {
+            throw new IllegalArgumentException("helperEndpoint must be an HTTP or HTTPS URI");
+        }
+
         if (timePrecisionSeconds <= 0) {
             throw new IllegalArgumentException("timePrecisionSeconds must be positive");
         }
