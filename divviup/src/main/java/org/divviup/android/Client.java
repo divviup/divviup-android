@@ -141,44 +141,6 @@ public class Client<M> {
         }
     }
 
-    private native byte[] prepareReportPrio3Count(
-            byte[] taskId,
-            byte[] leaderHPKEConfigList,
-            byte[] helperHPKEConfigList,
-            long timestamp,
-            boolean measurement
-    );
-
-    private native byte[] prepareReportPrio3Sum(
-            byte[] taskId,
-            byte[] leaderHPKEConfigList,
-            byte[] helperHPKEConfigList,
-            long timestamp,
-            long bits,
-            long measurement
-    );
-
-    private native byte[] prepareReportPrio3SumVec(
-            byte[] taskId,
-            byte[] leaderHPKEConfigList,
-            byte[] helperHPKEConfigList,
-            long timestamp,
-            long length,
-            long bits,
-            long chunkLength,
-            long[] measurement
-    );
-
-    private native byte[] prepareReportPrio3Histogram(
-            byte[] taskId,
-            byte[] leaderHPKEConfigList,
-            byte[] helperHPKEConfigList,
-            long timestamp,
-            long length,
-            long chunkLength,
-            long measurement
-    );
-
     private HpkeConfigList fetchHPKEConfigList(URI aggregatorEndpoint, TaskId taskId) throws IOException {
         String path = "hpke_config?task_id=" + taskId.encodeToString();
         URL url = aggregatorEndpoint.resolve(path).toURL();
@@ -238,7 +200,7 @@ public class Client<M> {
         @Override
         public byte[] prepareReport(Client<Boolean> client, HpkeConfigList leaderConfigList, HpkeConfigList helperConfigList, Boolean measurement) {
             if (measurement != null) {
-                return client.prepareReportPrio3Count(
+                return this.prepareReportNative(
                         client.taskId.toBytes(),
                         leaderConfigList.bytes,
                         helperConfigList.bytes,
@@ -249,6 +211,14 @@ public class Client<M> {
                 throw new IllegalArgumentException("measurement for Prio3Count must be a Boolean");
             }
         }
+
+        private native byte[] prepareReportNative(
+                byte[] taskId,
+                byte[] leaderHPKEConfigList,
+                byte[] helperHPKEConfigList,
+                long timestamp,
+                boolean measurement
+        );
     }
 
     private static class Prio3SumReportPreparer implements ReportPreparer<Long> {
@@ -261,7 +231,7 @@ public class Client<M> {
         @Override
         public byte[] prepareReport(Client<Long> client, HpkeConfigList leaderConfigList, HpkeConfigList helperConfigList, Long measurement) {
             if (measurement != null) {
-                return client.prepareReportPrio3Sum(
+                return this.prepareReportNative(
                         client.taskId.toBytes(),
                         leaderConfigList.bytes,
                         helperConfigList.bytes,
@@ -273,6 +243,15 @@ public class Client<M> {
                 throw new IllegalArgumentException("measurement for Prio3Sum must be a Long");
             }
         }
+
+        private native byte[] prepareReportNative(
+                byte[] taskId,
+                byte[] leaderHPKEConfigList,
+                byte[] helperHPKEConfigList,
+                long timestamp,
+                long bits,
+                long measurement
+        );
     }
 
     private static class Prio3SumVecReportPreparer implements ReportPreparer<long[]> {
@@ -290,7 +269,7 @@ public class Client<M> {
                 // Copy the measurement array, so we can prevent data races while the Rust code
                 // reads it.
                 long[] measurementCopy = Arrays.copyOf(measurement, measurement.length);
-                return client.prepareReportPrio3SumVec(
+                return this.prepareReportNative(
                         client.taskId.toBytes(),
                         leaderConfigList.bytes,
                         helperConfigList.bytes,
@@ -304,6 +283,17 @@ public class Client<M> {
                 throw new IllegalArgumentException("measurement for Prio3SumVec must be a long[]");
             }
         }
+
+        private native byte[] prepareReportNative(
+                byte[] taskId,
+                byte[] leaderHPKEConfigList,
+                byte[] helperHPKEConfigList,
+                long timestamp,
+                long length,
+                long bits,
+                long chunkLength,
+                long[] measurement
+        );
     }
 
     private static class Prio3HistogramReportPreparer implements ReportPreparer<Long> {
@@ -317,7 +307,7 @@ public class Client<M> {
         @Override
         public byte[] prepareReport(Client<Long> client, HpkeConfigList leaderConfigList, HpkeConfigList helperConfigList, Long measurement) {
             if (measurement != null) {
-                return client.prepareReportPrio3Histogram(
+                return this.prepareReportNative(
                         client.taskId.toBytes(),
                         leaderConfigList.bytes,
                         helperConfigList.bytes,
@@ -330,5 +320,15 @@ public class Client<M> {
                 throw new IllegalArgumentException("measurement for Prio3Histogram must be a Long");
             }
         }
+
+        private native byte[] prepareReportNative(
+                byte[] taskId,
+                byte[] leaderHPKEConfigList,
+                byte[] helperHPKEConfigList,
+                long timestamp,
+                long length,
+                long chunkLength,
+                long measurement
+        );
     }
 }

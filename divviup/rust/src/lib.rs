@@ -22,7 +22,9 @@ use rand::random;
 /// Note that the timestamp argument should already be rounded down according to the DAP task's
 /// time_precision.
 #[no_mangle]
-pub extern "system" fn Java_org_divviup_android_Client_prepareReportPrio3Count<'local>(
+pub extern "system" fn Java_org_divviup_android_Client_00024Prio3CountReportPreparer_prepareReportNative<
+    'local,
+>(
     mut env: JNIEnv<'local>,
     _this: JClass<'local>,
     task_id_byte_array: JByteArray<'local>,
@@ -49,7 +51,9 @@ pub extern "system" fn Java_org_divviup_android_Client_prepareReportPrio3Count<'
 /// Note that the timestamp argument should already be rounded down according to the DAP task's
 /// time_precision.
 #[no_mangle]
-pub extern "system" fn Java_org_divviup_android_Client_prepareReportPrio3Sum<'local>(
+pub extern "system" fn Java_org_divviup_android_Client_00024Prio3SumReportPreparer_prepareReportNative<
+    'local,
+>(
     mut env: JNIEnv<'local>,
     _this: JClass<'local>,
     task_id_byte_array: JByteArray<'local>,
@@ -78,7 +82,9 @@ pub extern "system" fn Java_org_divviup_android_Client_prepareReportPrio3Sum<'lo
 /// Note that the timestamp argument should already be rounded down according to the DAP task's
 /// time_precision.
 #[no_mangle]
-pub extern "system" fn Java_org_divviup_android_Client_prepareReportPrio3SumVec<'local>(
+pub extern "system" fn Java_org_divviup_android_Client_00024Prio3SumVecReportPreparer_prepareReportNative<
+    'local,
+>(
     mut env: JNIEnv<'local>,
     _this: JClass<'local>,
     task_id_byte_array: JByteArray<'local>,
@@ -111,7 +117,9 @@ pub extern "system" fn Java_org_divviup_android_Client_prepareReportPrio3SumVec<
 /// Note that the timestamp argument should already be rounded down according to the DAP task's
 /// time_precision.
 #[no_mangle]
-pub extern "system" fn Java_org_divviup_android_Client_prepareReportPrio3Histogram<'local>(
+pub extern "system" fn Java_org_divviup_android_Client_00024Prio3HistogramReportPreparer_prepareReportNative<
+    'local,
+>(
     mut env: JNIEnv<'local>,
     _this: JClass<'local>,
     task_id_byte_array: JByteArray<'local>,
