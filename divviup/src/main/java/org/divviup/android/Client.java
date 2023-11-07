@@ -21,7 +21,7 @@ public class Client<M> {
     private final URI leaderEndpoint, helperEndpoint;
     private final TaskId taskId;
     private final long timePrecisionSeconds, length, bits, chunkLength;
-    private final VDAF vdaf;
+    private final Vdaf vdaf;
 
 
     private Client(
@@ -29,7 +29,7 @@ public class Client<M> {
             URI helperEndpoint,
             TaskId taskId,
             long timePrecisionSeconds,
-            VDAF vdaf,
+            Vdaf vdaf,
             long length,
             long bits,
             long chunkLength
@@ -67,7 +67,7 @@ public class Client<M> {
                 helperEndpoint,
                 taskId,
                 timePrecisionSeconds,
-                VDAF.PRIO3COUNT,
+                Vdaf.PRIO3COUNT,
                 0,
                 0,
                 0
@@ -86,7 +86,7 @@ public class Client<M> {
                 helperEndpoint,
                 taskId,
                 timePrecisionSeconds,
-                VDAF.PRIO3SUM,
+                Vdaf.PRIO3SUM,
                 0,
                 bits,
                 0
@@ -107,7 +107,7 @@ public class Client<M> {
                 helperEndpoint,
                 taskId,
                 timePrecisionSeconds,
-                VDAF.PRIO3SUMVEC,
+                Vdaf.PRIO3SUMVEC,
                 length,
                 bits,
                 chunkLength
@@ -127,7 +127,7 @@ public class Client<M> {
                 helperEndpoint,
                 taskId,
                 timePrecisionSeconds,
-                VDAF.PRIO3HISTOGRAM,
+                Vdaf.PRIO3HISTOGRAM,
                 length,
                 0,
                 chunkLength
@@ -135,71 +135,79 @@ public class Client<M> {
     }
 
     public void sendMeasurement(M measurement) throws IOException {
-        HPKEConfigList leaderConfigList = this.fetchHPKEConfigList(this.leaderEndpoint, this.taskId);
-        HPKEConfigList helperConfigList = this.fetchHPKEConfigList(this.helperEndpoint, this.taskId);
+        HpkeConfigList leaderConfigList = this.fetchHPKEConfigList(this.leaderEndpoint, this.taskId);
+        HpkeConfigList helperConfigList = this.fetchHPKEConfigList(this.helperEndpoint, this.taskId);
         long timestamp = this.reportTimestamp();
-        byte[] report = null;
-        if (this.vdaf == VDAF.PRIO3COUNT) {
-            if (measurement instanceof Boolean) {
-                report = this.prepareReportPrio3Count(
-                        taskId.toBytes(),
-                        leaderConfigList.bytes,
-                        helperConfigList.bytes,
-                        timestamp,
-                        (Boolean) measurement
-                );
-            } else {
-                throw new IllegalArgumentException("measurement for Prio3Count must be a Boolean");
-            }
-        } else if (this.vdaf == VDAF.PRIO3SUM) {
-            if (measurement instanceof Long) {
-                report = this.prepareReportPrio3Sum(
-                        taskId.toBytes(),
-                        leaderConfigList.bytes,
-                        helperConfigList.bytes,
-                        timestamp,
-                        bits,
-                        (Long) measurement
-                );
-            } else {
-                throw new IllegalArgumentException("measurement for Prio3Sum must be a Long");
-            }
-        } else if (this.vdaf == VDAF.PRIO3SUMVEC) {
-            if (measurement instanceof long[]) {
-                long[] measurementArray = (long[]) measurement;
-                // Copy the measurement array, so we can prevent data races while the Rust code
-                // reads it.
-                long[] measurementCopy = Arrays.copyOf(measurementArray, measurementArray.length);
-                report = this.prepareReportPrio3SumVec(
-                        taskId.toBytes(),
-                        leaderConfigList.bytes,
-                        helperConfigList.bytes,
-                        timestamp,
-                        length,
-                        bits,
-                        chunkLength,
-                        measurementCopy
-                );
-            } else {
-                throw new IllegalArgumentException("measurement for Prio3SumVec must be a long[]");
-            }
-        } else if (this.vdaf == VDAF.PRIO3HISTOGRAM) {
-            if (measurement instanceof Long) {
-                report = this.prepareReportPrio3Histogram(
-                        taskId.toBytes(),
-                        leaderConfigList.bytes,
-                        helperConfigList.bytes,
-                        timestamp,
-                        length,
-                        chunkLength,
-                        (Long) measurement
-                );
-            } else {
-                throw new IllegalArgumentException("measurement for Prio3Histogram must be a Long");
-            }
-        }
-        if (report == null) {
-            throw new IllegalArgumentException("unsupported VDAF");
+        byte[] report;
+        switch (vdaf) {
+            case PRIO3COUNT:
+                if (measurement instanceof Boolean) {
+                    report = this.prepareReportPrio3Count(
+                            taskId.toBytes(),
+                            leaderConfigList.bytes,
+                            helperConfigList.bytes,
+                            timestamp,
+                            (Boolean) measurement
+                    );
+                } else {
+                    throw new IllegalArgumentException("measurement for Prio3Count must be a Boolean");
+                }
+                break;
+
+            case PRIO3SUM:
+                if (measurement instanceof Long) {
+                    report = this.prepareReportPrio3Sum(
+                            taskId.toBytes(),
+                            leaderConfigList.bytes,
+                            helperConfigList.bytes,
+                            timestamp,
+                            bits,
+                            (Long) measurement
+                    );
+                } else {
+                    throw new IllegalArgumentException("measurement for Prio3Sum must be a Long");
+                }
+                break;
+
+            case PRIO3SUMVEC:
+                if (measurement instanceof long[]) {
+                    long[] measurementArray = (long[]) measurement;
+                    // Copy the measurement array, so we can prevent data races while the Rust code
+                    // reads it.
+                    long[] measurementCopy = Arrays.copyOf(measurementArray, measurementArray.length);
+                    report = this.prepareReportPrio3SumVec(
+                            taskId.toBytes(),
+                            leaderConfigList.bytes,
+                            helperConfigList.bytes,
+                            timestamp,
+                            length,
+                            bits,
+                            chunkLength,
+                            measurementCopy
+                    );
+                } else {
+                    throw new IllegalArgumentException("measurement for Prio3SumVec must be a long[]");
+                }
+                break;
+
+            case PRIO3HISTOGRAM:
+                if (measurement instanceof Long) {
+                    report = this.prepareReportPrio3Histogram(
+                            taskId.toBytes(),
+                            leaderConfigList.bytes,
+                            helperConfigList.bytes,
+                            timestamp,
+                            length,
+                            chunkLength,
+                            (Long) measurement
+                    );
+                } else {
+                    throw new IllegalArgumentException("measurement for Prio3Histogram must be a Long");
+                }
+                break;
+
+            default:
+                throw new IllegalArgumentException("unsupported VDAF");
         }
 
         String path = "tasks/" + this.taskId.encodeToString() + "/reports";
@@ -260,7 +268,7 @@ public class Client<M> {
             long measurement
     );
 
-    private HPKEConfigList fetchHPKEConfigList(URI aggregatorEndpoint, TaskId taskId) throws IOException {
+    private HpkeConfigList fetchHPKEConfigList(URI aggregatorEndpoint, TaskId taskId) throws IOException {
         String path = "hpke_config?task_id=" + taskId.encodeToString();
         URL url = aggregatorEndpoint.resolve(path).toURL();
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -281,7 +289,7 @@ public class Client<M> {
         InputStream in = connection.getInputStream();
         byte[] data = IOUtils.toByteArray(in);
         in.close();
-        return new HPKEConfigList(data);
+        return new HpkeConfigList(data);
     }
 
     private static String getUserAgent() {
@@ -298,15 +306,15 @@ public class Client<M> {
         return seconds - (seconds % timePrecisionSeconds);
     }
 
-    private static class HPKEConfigList {
+    private static class HpkeConfigList {
         private final byte[] bytes;
 
-        public HPKEConfigList(byte[] bytes) {
+        public HpkeConfigList(byte[] bytes) {
             this.bytes = bytes;
         }
     }
 
-    private enum VDAF {
+    private enum Vdaf {
         PRIO3COUNT, PRIO3SUM, PRIO3SUMVEC, PRIO3HISTOGRAM
     }
 }
