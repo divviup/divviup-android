@@ -20,8 +20,8 @@ public class Client<M> {
 
     private final URI leaderEndpoint, helperEndpoint;
     private final TaskId taskId;
-    private final long timePrecisionSeconds, length, bits, chunkLength;
-    private final Vdaf vdaf;
+    private final long timePrecisionSeconds;
+    private final ReportPreparer<M> reportPreparer;
 
 
     private Client(
@@ -29,10 +29,7 @@ public class Client<M> {
             URI helperEndpoint,
             TaskId taskId,
             long timePrecisionSeconds,
-            Vdaf vdaf,
-            long length,
-            long bits,
-            long chunkLength
+            ReportPreparer<M> reportPreparer
     ) {
         if (!leaderEndpoint.getScheme().equals("https") && !leaderEndpoint.getScheme().equals("http")) {
             throw new IllegalArgumentException("leaderEndpoint must be an HTTP or HTTPS URI");
@@ -50,10 +47,7 @@ public class Client<M> {
         this.helperEndpoint = helperEndpoint;
         this.taskId = taskId;
         this.timePrecisionSeconds = timePrecisionSeconds;
-        this.vdaf = vdaf;
-        this.length = length;
-        this.bits = bits;
-        this.chunkLength = chunkLength;
+        this.reportPreparer = reportPreparer;
     }
 
     public static Client<Boolean> createPrio3Count(
@@ -67,10 +61,7 @@ public class Client<M> {
                 helperEndpoint,
                 taskId,
                 timePrecisionSeconds,
-                Vdaf.PRIO3COUNT,
-                0,
-                0,
-                0
+                new Prio3CountReportPreparer()
         );
     }
 
@@ -86,10 +77,7 @@ public class Client<M> {
                 helperEndpoint,
                 taskId,
                 timePrecisionSeconds,
-                Vdaf.PRIO3SUM,
-                0,
-                bits,
-                0
+                new Prio3SumReportPreparer(bits)
         );
     }
 
@@ -107,10 +95,7 @@ public class Client<M> {
                 helperEndpoint,
                 taskId,
                 timePrecisionSeconds,
-                Vdaf.PRIO3SUMVEC,
-                length,
-                bits,
-                chunkLength
+                new Prio3SumVecReportPreparer(length, bits, chunkLength)
         );
     }
 
@@ -127,88 +112,14 @@ public class Client<M> {
                 helperEndpoint,
                 taskId,
                 timePrecisionSeconds,
-                Vdaf.PRIO3HISTOGRAM,
-                length,
-                0,
-                chunkLength
+                new Prio3HistogramReportPreparer(length, chunkLength)
         );
     }
 
     public void sendMeasurement(M measurement) throws IOException {
         HpkeConfigList leaderConfigList = this.fetchHPKEConfigList(this.leaderEndpoint, this.taskId);
         HpkeConfigList helperConfigList = this.fetchHPKEConfigList(this.helperEndpoint, this.taskId);
-        long timestamp = this.reportTimestamp();
-        byte[] report;
-        switch (vdaf) {
-            case PRIO3COUNT:
-                if (measurement instanceof Boolean) {
-                    report = this.prepareReportPrio3Count(
-                            taskId.toBytes(),
-                            leaderConfigList.bytes,
-                            helperConfigList.bytes,
-                            timestamp,
-                            (Boolean) measurement
-                    );
-                } else {
-                    throw new IllegalArgumentException("measurement for Prio3Count must be a Boolean");
-                }
-                break;
-
-            case PRIO3SUM:
-                if (measurement instanceof Long) {
-                    report = this.prepareReportPrio3Sum(
-                            taskId.toBytes(),
-                            leaderConfigList.bytes,
-                            helperConfigList.bytes,
-                            timestamp,
-                            bits,
-                            (Long) measurement
-                    );
-                } else {
-                    throw new IllegalArgumentException("measurement for Prio3Sum must be a Long");
-                }
-                break;
-
-            case PRIO3SUMVEC:
-                if (measurement instanceof long[]) {
-                    long[] measurementArray = (long[]) measurement;
-                    // Copy the measurement array, so we can prevent data races while the Rust code
-                    // reads it.
-                    long[] measurementCopy = Arrays.copyOf(measurementArray, measurementArray.length);
-                    report = this.prepareReportPrio3SumVec(
-                            taskId.toBytes(),
-                            leaderConfigList.bytes,
-                            helperConfigList.bytes,
-                            timestamp,
-                            length,
-                            bits,
-                            chunkLength,
-                            measurementCopy
-                    );
-                } else {
-                    throw new IllegalArgumentException("measurement for Prio3SumVec must be a long[]");
-                }
-                break;
-
-            case PRIO3HISTOGRAM:
-                if (measurement instanceof Long) {
-                    report = this.prepareReportPrio3Histogram(
-                            taskId.toBytes(),
-                            leaderConfigList.bytes,
-                            helperConfigList.bytes,
-                            timestamp,
-                            length,
-                            chunkLength,
-                            (Long) measurement
-                    );
-                } else {
-                    throw new IllegalArgumentException("measurement for Prio3Histogram must be a Long");
-                }
-                break;
-
-            default:
-                throw new IllegalArgumentException("unsupported VDAF");
-        }
+        byte[] report = reportPreparer.prepareReport(this, leaderConfigList, helperConfigList, measurement);
 
         String path = "tasks/" + this.taskId.encodeToString() + "/reports";
         URL url = leaderEndpoint.resolve(path).toURL();
@@ -314,7 +225,110 @@ public class Client<M> {
         }
     }
 
-    private enum Vdaf {
-        PRIO3COUNT, PRIO3SUM, PRIO3SUMVEC, PRIO3HISTOGRAM
+    private interface ReportPreparer<M> {
+        byte[] prepareReport(
+                Client<M> client,
+                HpkeConfigList leaderConfigList,
+                HpkeConfigList helperConfigList,
+                M measurement
+        );
+    }
+
+    private static class Prio3CountReportPreparer implements ReportPreparer<Boolean> {
+        @Override
+        public byte[] prepareReport(Client<Boolean> client, HpkeConfigList leaderConfigList, HpkeConfigList helperConfigList, Boolean measurement) {
+            if (measurement != null) {
+                return client.prepareReportPrio3Count(
+                        client.taskId.toBytes(),
+                        leaderConfigList.bytes,
+                        helperConfigList.bytes,
+                        client.reportTimestamp(),
+                        (Boolean) measurement
+                );
+            } else {
+                throw new IllegalArgumentException("measurement for Prio3Count must be a Boolean");
+            }
+        }
+    }
+
+    private static class Prio3SumReportPreparer implements ReportPreparer<Long> {
+        private final long bits;
+
+        public Prio3SumReportPreparer(long bits) {
+            this.bits = bits;
+        }
+
+        @Override
+        public byte[] prepareReport(Client<Long> client, HpkeConfigList leaderConfigList, HpkeConfigList helperConfigList, Long measurement) {
+            if (measurement != null) {
+                return client.prepareReportPrio3Sum(
+                        client.taskId.toBytes(),
+                        leaderConfigList.bytes,
+                        helperConfigList.bytes,
+                        client.reportTimestamp(),
+                        bits,
+                        (Long) measurement
+                );
+            } else {
+                throw new IllegalArgumentException("measurement for Prio3Sum must be a Long");
+            }
+        }
+    }
+
+    private static class Prio3SumVecReportPreparer implements ReportPreparer<long[]> {
+        private final long length, bits, chunkLength;
+
+        public Prio3SumVecReportPreparer(long length, long bits, long chunkLength) {
+            this.length = length;
+            this.bits = bits;
+            this.chunkLength = chunkLength;
+        }
+
+        @Override
+        public byte[] prepareReport(Client<long[]> client, HpkeConfigList leaderConfigList, HpkeConfigList helperConfigList, long[] measurement) {
+            if (measurement != null) {
+                // Copy the measurement array, so we can prevent data races while the Rust code
+                // reads it.
+                long[] measurementCopy = Arrays.copyOf(measurement, measurement.length);
+                return client.prepareReportPrio3SumVec(
+                        client.taskId.toBytes(),
+                        leaderConfigList.bytes,
+                        helperConfigList.bytes,
+                        client.reportTimestamp(),
+                        length,
+                        bits,
+                        chunkLength,
+                        measurementCopy
+                );
+            } else {
+                throw new IllegalArgumentException("measurement for Prio3SumVec must be a long[]");
+            }
+        }
+    }
+
+    private static class Prio3HistogramReportPreparer implements ReportPreparer<Long> {
+        private final long length, chunkLength;
+
+        public Prio3HistogramReportPreparer(long length, long chunkLength) {
+            this.length = length;
+            this.chunkLength = chunkLength;
+        }
+
+        @Override
+        public byte[] prepareReport(Client<Long> client, HpkeConfigList leaderConfigList, HpkeConfigList helperConfigList, Long measurement) {
+            if (measurement != null) {
+                return client.prepareReportPrio3Histogram(
+                        client.taskId.toBytes(),
+                        leaderConfigList.bytes,
+                        helperConfigList.bytes,
+                        client.reportTimestamp(),
+                        length,
+                        chunkLength,
+                        (Long) measurement
+                );
+            } else {
+                throw new IllegalArgumentException("measurement for Prio3Histogram must be a Long");
+            }
+        }
     }
 }
