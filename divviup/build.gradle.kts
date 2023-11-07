@@ -36,17 +36,24 @@ dependencies {
     androidTestImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
 }
 
+val rustTargets: List<String> by rootProject.extra
+val hostRustTarget: String by rootProject.extra
+
 cargo {
     module = "./rust"
     libname = "divviup_android"
-    targets = listOf("arm", "arm64", "x86", "x86_64")
-
+    targets = rustTargets
     profile = "release"
-
     pythonCommand = "python3"
 }
 
 tasks.matching { it.name.matches(Regex("merge.*JniLibFolders")) }.configureEach {
-    this.inputs.dir(File(buildDir, "rustJniLibs/android"))
-    this.dependsOn(tasks.named("cargoBuild"))
+    inputs.dir(File(buildDir, "rustJniLibs/android"))
+    dependsOn(tasks.named("cargoBuild"))
+}
+
+tasks.withType<Test>().matching { it.name.matches(Regex("test.*UnitTest"))}.configureEach {
+    systemProperty("java.library.path", "${buildDir}/rustJniLibs/desktop/${hostRustTarget}")
+    val capitalizedHostRustTarget = hostRustTarget.replaceFirstChar { it.uppercase() }
+    dependsOn(tasks.named("cargoBuild${capitalizedHostRustTarget}"))
 }
