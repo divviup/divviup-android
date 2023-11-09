@@ -15,4 +15,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Divvi Up"
 include(":divviup")
+include(":divviup:commontest")
 include(":sampleapp")
