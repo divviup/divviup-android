@@ -37,7 +37,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Random;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 public class JanusIntegrationTest {
     /** @noinspection SpellCheckingInspection */
@@ -86,7 +87,7 @@ public class JanusIntegrationTest {
     }
 
     @Test
-    public void testPrio3Count() throws URISyntaxException, IOException, InteropApiException, InterruptedException {
+    public void testPrio3Count() throws URISyntaxException, IOException, InteropApiException, InterruptedException, NoSuchAlgorithmException {
         ObjectNode vdaf = JsonNodeFactory.instance.objectNode();
         vdaf.set("type", JsonNodeFactory.instance.textNode("Prio3Count"));
         runIntegrationTest(
@@ -98,7 +99,7 @@ public class JanusIntegrationTest {
     }
 
     @Test
-    public void testPrio3Sum() throws URISyntaxException, IOException, InteropApiException, InterruptedException {
+    public void testPrio3Sum() throws URISyntaxException, IOException, InteropApiException, InterruptedException, NoSuchAlgorithmException {
         ObjectNode vdaf = JsonNodeFactory.instance.objectNode();
         vdaf.set("type", JsonNodeFactory.instance.textNode("Prio3Sum"));
         vdaf.set("bits", JsonNodeFactory.instance.textNode("16"));
@@ -111,7 +112,7 @@ public class JanusIntegrationTest {
     }
 
     @Test
-    public void testPrio3SumVec() throws URISyntaxException, IOException, InteropApiException, InterruptedException {
+    public void testPrio3SumVec() throws URISyntaxException, IOException, InteropApiException, InterruptedException, NoSuchAlgorithmException {
         ObjectNode vdaf = JsonNodeFactory.instance.objectNode();
         vdaf.set("type", JsonNodeFactory.instance.textNode("Prio3SumVec"));
         vdaf.set("length", JsonNodeFactory.instance.textNode("3"));
@@ -136,7 +137,7 @@ public class JanusIntegrationTest {
     }
 
     @Test
-    public void testPrio3Histogram() throws URISyntaxException, IOException, InteropApiException, InterruptedException {
+    public void testPrio3Histogram() throws URISyntaxException, IOException, InteropApiException, InterruptedException, NoSuchAlgorithmException {
         ObjectNode vdaf = JsonNodeFactory.instance.objectNode();
         vdaf.set("type", JsonNodeFactory.instance.textNode("Prio3Histogram"));
         vdaf.set("length", JsonNodeFactory.instance.textNode("4"));
@@ -159,7 +160,7 @@ public class JanusIntegrationTest {
             JsonNode vdaf,
             M[] measurements,
             JsonNode expectedResult
-    ) throws URISyntaxException, IOException, InteropApiException, InterruptedException {
+    ) throws URISyntaxException, IOException, InteropApiException, InterruptedException, NoSuchAlgorithmException {
         // Prepare task parameters
         URI leaderUriHost = new URI("http", null, leader.getHost(), leader.getFirstMappedPort(), "/", null, null);
         URI helperUriHost = new URI("http", null, helper.getHost(), helper.getFirstMappedPort(), "/", null, null);
@@ -264,22 +265,19 @@ public class JanusIntegrationTest {
         assertEquals(expectedResult, result);
     }
 
-    private static TaskId randomTaskId() {
-        byte[] bytes = new byte[32];
-        new Random().nextBytes(bytes);
+    private static TaskId randomTaskId() throws NoSuchAlgorithmException {
+        byte[] bytes = SecureRandom.getInstanceStrong().generateSeed(32);
         String encoded = Base64.encodeToString(bytes, BASE64_FLAGS);
         return TaskId.parse(encoded);
     }
 
-    private static String randomAuthToken(String prefix) {
-        byte[] bytes = new byte[16];
-        new Random().nextBytes(bytes);
+    private static String randomAuthToken(String prefix) throws NoSuchAlgorithmException {
+        byte[] bytes = SecureRandom.getInstanceStrong().generateSeed(16);
         return prefix + Base64.encodeToString(bytes, BASE64_FLAGS);
     }
 
-    private static String randomEncodedVdafVerifyKey() {
-        byte[] bytes = new byte[16];
-        new Random().nextBytes(bytes);
+    private static String randomEncodedVdafVerifyKey() throws NoSuchAlgorithmException {
+        byte[] bytes = SecureRandom.getInstanceStrong().generateSeed(16);
         return Base64.encodeToString(bytes, BASE64_FLAGS);
     }
 
