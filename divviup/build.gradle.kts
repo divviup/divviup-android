@@ -36,7 +36,7 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers:1.19.1")
     testImplementation("com.fasterxml.jackson.core:jackson-databind:2.15.3")
     testImplementation("ch.qos.logback:logback-core:1.3.5")
-    testImplementation("ch.qos.logback:logback-classic:1.3.5")
+    testImplementation("ch.qos.logback:logback-classic:1.4.11")
     androidTestImplementation(project(":divviup:commontest"))
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
