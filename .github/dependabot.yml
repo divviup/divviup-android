@@ -8,6 +8,8 @@ registries:
 updates:
   - package-ecosystem: gradle
     directory: /
+    registries:
+      - google
     schedule:
       interval: weekly
     target-branch: main
