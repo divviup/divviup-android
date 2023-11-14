@@ -2,7 +2,7 @@ version: 2
 
 registries:
   google:
-    type: maven-repository:
+    type: maven-repository
     url: https://dl.google.com/dl/android/maven2/
 
 updates:
