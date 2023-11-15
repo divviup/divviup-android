@@ -166,12 +166,7 @@ public class Client<M> {
     }
 
     private static String getUserAgent() {
-        Package pkg = Client.class.getPackage();
-        if (pkg != null) {
-            return "divviup-android/" + pkg.getImplementationVersion();
-        } else {
-            return "divviup-android";
-        }
+        return "divviup-android/" + BuildConfig.VERSION;
     }
 
     private long reportTimestamp() {

@@ -9,11 +9,19 @@ android {
 
     ndkVersion = "26.1.10909125"
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         minSdk = 21
 
+        version = "0.1.0-SNAPSHOT"
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
+
+        buildConfigField("String", "VERSION", "\"" + version.toString() + "\"")
     }
 
     buildTypes {
