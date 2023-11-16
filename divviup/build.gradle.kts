@@ -42,7 +42,7 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
     testImplementation("org.testcontainers:testcontainers:1.19.2")
-    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.15.3")
+    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.16.0")
     testImplementation("ch.qos.logback:logback-core:1.4.11")
     testImplementation("ch.qos.logback:logback-classic:1.4.11")
     androidTestImplementation(project(":divviup:commontest"))
