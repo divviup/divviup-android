@@ -12,6 +12,17 @@ updates:
       - google
     schedule:
       interval: weekly
+    groups:
+      agp:
+        patterns:
+          - com.android.application
+          - com.android.library
+      logback:
+        patterns:
+          - ch.qos.logback:*
+      jetpack:
+        patterns:
+          - androidx.*
     target-branch: main
 
   - package-ecosystem: cargo
