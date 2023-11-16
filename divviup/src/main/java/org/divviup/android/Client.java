@@ -200,7 +200,7 @@ public class Client<M> {
                         leaderConfigList.bytes,
                         helperConfigList.bytes,
                         client.reportTimestamp(),
-                        (Boolean) measurement
+                        measurement
                 );
             } else {
                 throw new IllegalArgumentException("measurement for Prio3Count must be a Boolean");
@@ -232,7 +232,7 @@ public class Client<M> {
                         helperConfigList.bytes,
                         client.reportTimestamp(),
                         bits,
-                        (Long) measurement
+                        measurement
                 );
             } else {
                 throw new IllegalArgumentException("measurement for Prio3Sum must be a Long");
@@ -309,7 +309,7 @@ public class Client<M> {
                         client.reportTimestamp(),
                         length,
                         chunkLength,
-                        (Long) measurement
+                        measurement
                 );
             } else {
                 throw new IllegalArgumentException("measurement for Prio3Histogram must be a Long");
