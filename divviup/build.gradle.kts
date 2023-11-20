@@ -72,3 +72,14 @@ tasks.withType<Test>().matching { it.name.matches(Regex("test.*UnitTest"))}.conf
     val capitalizedHostRustTarget = hostRustTarget.replaceFirstChar { it.uppercase() }
     dependsOn(tasks.named("cargoBuild${capitalizedHostRustTarget}"))
 }
+
+afterEvaluate {
+    android.libraryVariants.forEach { variant ->
+        val capitalizedVariantName = variant.name.replaceFirstChar { it.uppercase() }
+        tasks.register<Javadoc>("generate${capitalizedVariantName}Javadoc") {
+            source = android.sourceSets["main"].java.getSourceFiles()
+            classpath += files(android.bootClasspath)
+            classpath += files(variant.compileConfiguration)
+        }
+    }
+}

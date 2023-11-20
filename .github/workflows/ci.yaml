@@ -46,9 +46,7 @@ jobs:
       working-directory: divviup/rust
       run: cargo clippy
     - name: Build and test
-      run: ./gradlew build
-      # Note that `connectedCheck` is skipped for now, because setting up an
-      # emulator is nontrivial.
+      run: ./gradlew build generateReleaseJavadoc
 
   dependency-review:
     if: github.event_name == 'pull_request'
