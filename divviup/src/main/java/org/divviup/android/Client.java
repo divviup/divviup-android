@@ -10,6 +10,12 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 
+/**
+ * A client that can submit reports to a particular DAP task. Objects of this class are immutable,
+ * and thus thread-safe.
+ *
+ * @param <M>   the type of measurements (determined by the VDAF)
+ */
 public class Client<M> {
     private static final String HPKE_CONFIG_LIST_CONTENT_TYPE = "application/dap-hpke-config-list";
     private static final String REPORT_CONTENT_TYPE = "application/dap-report";
@@ -50,6 +56,19 @@ public class Client<M> {
         this.reportPreparer = reportPreparer;
     }
 
+    /**
+     * Constructs a client for a DAP task using the Prio3Count VDAF. Measurements are
+     * <code>Boolean</code>s. The aggregate result is the number of <code>true</code> measurements.
+     *
+     * @param leaderEndpoint            the URI of the leader aggregator's HTTPS endpoint
+     * @param helperEndpoint            the URI of the helper aggregator's HTTPS endpoint
+     * @param taskId                    the {@link TaskId} of the DAP task
+     * @param timePrecisionSeconds      the time precision of the DAP task, in seconds
+     * @return                          a client for the configured DAP task
+     * @throws IllegalArgumentException if the scheme of leaderEndpoint or helperEndpoint is not
+     *                                  http or https, or if timePrecisionSeconds is not a positive
+     *                                  number
+     */
     public static Client<Boolean> createPrio3Count(
             URI leaderEndpoint,
             URI helperEndpoint,
@@ -65,6 +84,22 @@ public class Client<M> {
         );
     }
 
+    /**
+     * Constructs a client for a DAP task using the Prio3Sum VDAF. Measurements are <code>Long</code>
+     * integers. Valid measurements must be greater than or equal to zero, and less than
+     * <code>2 ^ bits</code>. The aggregate result is the sum of all measurements.
+     *
+     * @param leaderEndpoint            the URI of the leader aggregator's HTTPS endpoint
+     * @param helperEndpoint            the URI of the helper aggregator's HTTPS endpoint
+     * @param taskId                    the {@link TaskId} of the DAP task
+     * @param timePrecisionSeconds      the time precision of the DAP task, in seconds
+     * @param bits                      the bit width of measurements. This is a parameter of the
+     *                                  Prio3Sum VDAF.
+     * @return                          a client for the configured DAP task
+     * @throws IllegalArgumentException if the scheme of leaderEndpoint or helperEndpoint is not
+     *                                  http or https, or if timePrecisionSeconds is not a positive
+     *                                  number
+     */
     public static Client<Long> createPrio3Sum(
             URI leaderEndpoint,
             URI helperEndpoint,
@@ -81,6 +116,26 @@ public class Client<M> {
         );
     }
 
+    /**
+     * Constructs a client for a DAP task using the Prio3SumVec VDAF. Measurements are vectors of
+     * integers, as a <code>long[]</code> array of the given length. Valid measurements must have
+     * every integer be greater than or equal to zero, and less than <code>2 ^ bits</code>. The
+     * aggregate result is the element-wise sum of all measurements.
+     *
+     * @param leaderEndpoint            the URI of the leader aggregator's HTTPS endpoint
+     * @param helperEndpoint            the URI of the helper aggregator's HTTPS endpoint
+     * @param taskId                    the {@link TaskId} of the DAP task
+     * @param timePrecisionSeconds      the time precision of the DAP task, in seconds
+     * @param length                    the length of measurement vectors. This is a parameter of
+     *                                  the Prio3SumVec VDAF.
+     * @param bits                      the bit width of each element of the measurement vector.
+     *                                  This is a parameter of the Prio3SumVec VDAF.
+     * @param chunkLength               the chunk length internally used by the Prio3SumVec VDAF
+     * @return                          a client for the configured DAP task
+     * @throws IllegalArgumentException if the scheme of leaderEndpoint or helperEndpoint is not
+     *                                  http or https, or if timePrecisionSeconds is not a positive
+     *                                  number
+     */
     public static Client<long[]> createPrio3SumVec(
             URI leaderEndpoint,
             URI helperEndpoint,
@@ -99,6 +154,24 @@ public class Client<M> {
         );
     }
 
+    /**
+     * Constructs a client for a DAP task using the Prio3Histogram VDAF. Measurements are bucket
+     * indexes, as <code>Long</code> integers. Valid measurements must be greater than or equal to
+     * zero, and less than the <code>length</code> parameter. The aggregate result counts how many
+     * times each bucket index appeared in a measurement.
+     *
+     * @param leaderEndpoint            the URI of the leader aggregator's HTTPS endpoint
+     * @param helperEndpoint            the URI of the helper aggregator's HTTPS endpoint
+     * @param taskId                    the {@link TaskId} of the DAP task
+     * @param timePrecisionSeconds      the time precision of the DAP task, in seconds
+     * @param length                    the total number of histogram buckets. This is a parameter
+     *                                  of the Prio3Histogram VDAF.
+     * @param chunkLength               the chunk length internally used by the Prio3Histogram VDAF
+     * @return                          a client for the configured DAP task
+     * @throws IllegalArgumentException if the scheme of leaderEndpoint or helperEndpoint is not
+     *                                  http or https, or if timePrecisionSeconds is not a positive
+     *                                  number
+     */
     public static Client<Long> createPrio3Histogram(
             URI leaderEndpoint,
             URI helperEndpoint,
@@ -116,6 +189,15 @@ public class Client<M> {
         );
     }
 
+    /**
+     * Encodes a measurement into a DAP report, and submits it. This must not be called from the UI
+     * thread.
+     *
+     * @param measurement               the measurement to be aggregated
+     * @throws IOException              if requests to either aggregator fail
+     * @throws IllegalArgumentException if the measurement is of the wrong type
+     * @throws RuntimeException         if there is an internal error while preparing the report
+     */
     public void sendMeasurement(M measurement) throws IOException {
         HpkeConfigList leaderConfigList = this.fetchHPKEConfigList(this.leaderEndpoint, this.taskId);
         HpkeConfigList helperConfigList = this.fetchHPKEConfigList(this.helperEndpoint, this.taskId);
