@@ -1,6 +1,7 @@
 plugins {
     id("com.android.library")
     id("org.mozilla.rust-android-gradle.rust-android")
+    id("maven-publish")
 }
 
 android {
@@ -33,6 +34,13 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
     }
 }
 
@@ -80,6 +88,19 @@ afterEvaluate {
             source = android.sourceSets["main"].java.getSourceFiles()
             classpath += files(android.bootClasspath)
             classpath += files(variant.compileConfiguration)
+        }
+    }
+}
+
+publishing {
+    publications {
+        register<MavenPublication>("release") {
+            groupId = "org.divviup.android"
+            artifactId = "divviup-android"
+
+            afterEvaluate {
+                from(components["release"])
+            }
         }
     }
 }
