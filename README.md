@@ -8,9 +8,9 @@ An Android client library for the [Distributed Aggregation Protocol][DAP].
 The following versions of the DAP protocol are supported by different branches
 and releases.
 
-| Package version | Git branch | Protocol version | Conformant? | Status |
-|-----------------|------------|------------------|-------------|--------|
-| 0.1.0 (forthcoming) | `main` | [`draft-ietf-ppm-dap-07`][draft-07] | Yes | Supported |
+| Package version     | Git branch | Protocol version                    | Conformant? | Status    |
+|---------------------|------------|-------------------------------------|-------------|-----------|
+| 0.1.0 (forthcoming) | `main`     | [`draft-ietf-ppm-dap-07`][draft-07] | Yes         | Supported |
 
 [draft-07]: https://datatracker.ietf.org/doc/draft-ietf-ppm-dap/07/
 

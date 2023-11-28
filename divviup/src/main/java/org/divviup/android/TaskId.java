@@ -2,6 +2,11 @@ package org.divviup.android;
 
 import android.util.Base64;
 
+/**
+ * A DAP task identifier. This is the unique identifier that clients, aggregators, and collectors
+ * use to distinguish between different kinds of measurements, and associate reports with a task.
+ * Objects of this class are immutable.
+ */
 public class TaskId {
     private final byte[] bytes;
 
@@ -13,7 +18,7 @@ public class TaskId {
     }
 
     /**
-     * Encodes a task ID into its textual representation.
+     * Encodes this task ID into its textual representation.
      *
      * @return  the task ID in un-padded base64url form
      */
@@ -27,8 +32,10 @@ public class TaskId {
     /**
      * Parses a task ID from its textual representation, as seen in DAP URLs.
      *
-     * @param input the task ID in un-padded base64url form
-     * @return  the task ID
+     * @param input                     the task ID in un-padded base64url form
+     * @return                          the task ID
+     * @throws IllegalArgumentException if the input is not a valid un-padded base64url value, or if
+     *                                  it does not decode to 32 bytes
      */
     public static TaskId parse(String input) {
         byte[] bytes = Base64.decode(
