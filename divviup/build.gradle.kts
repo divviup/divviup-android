@@ -45,7 +45,7 @@ android {
 }
 
 dependencies {
-    implementation("commons-io:commons-io:2.15.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
     testImplementation(project(":divviup:commontest"))
     testImplementation("junit:junit:4.13.2")
     testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
@@ -53,6 +53,8 @@ dependencies {
     testImplementation("com.fasterxml.jackson.core:jackson-databind:2.16.0")
     testImplementation("ch.qos.logback:logback-core:1.4.12")
     testImplementation("ch.qos.logback:logback-classic:1.4.12")
+    testImplementation("commons-io:commons-io:2.15.0")
+    testImplementation("org.mockito:mockito-core:5.7.0")
     androidTestImplementation(project(":divviup:commontest"))
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
