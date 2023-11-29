@@ -103,6 +103,28 @@ publishing {
             afterEvaluate {
                 from(components["release"])
             }
+
+            pom {
+                name.set("divviup-android")
+                description.set("An Android client library for the Distributed Aggregation Protocol.")
+                url.set("https://divviup.org/")
+                licenses {
+                    license {
+                        name.set("Mozilla Public License 2.0")
+                        url.set("https://www.mozilla.org/MPL/2.0/")
+                    }
+                }
+                developers {
+                    developer {
+                        email.set("sre@divviup.org")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:https://github.com/divviup/divviup-android.git")
+                    developerConnection.set("scm:git:https://github.com/divviup/divviup-android.git")
+                    url.set("https://github.com/divviup/divviup-android/tree/main")
+                }
+            }
         }
     }
 }
