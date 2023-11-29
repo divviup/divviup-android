@@ -1,7 +1,9 @@
 package org.divviup.android;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.when;
 
+import android.content.Context;
 import android.util.Base64;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -18,7 +20,12 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
@@ -40,6 +47,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
+@RunWith(MockitoJUnitRunner.class)
 public class JanusIntegrationTest {
     /** @noinspection SpellCheckingInspection */
     private static final DockerImageName JANUS_INTEROP_AGGREGATOR = DockerImageName.parse(
@@ -54,6 +62,17 @@ public class JanusIntegrationTest {
     private static final String LEADER_ALIAS = "leader", HELPER_ALIAS = "helper";
 
     private GenericContainer<?> leader, helper, collector;
+
+    @ClassRule
+    public static final TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+    @Mock(strictness = Mock.Strictness.LENIENT)
+    private static Context mockContext;
+
+    @Before
+    public void initMock() {
+        when(mockContext.getCacheDir()).thenReturn(temporaryFolder.getRoot());
+    }
 
     /** @noinspection resource */
     @Before
@@ -91,7 +110,7 @@ public class JanusIntegrationTest {
         ObjectNode vdaf = JsonNodeFactory.instance.objectNode();
         vdaf.set("type", JsonNodeFactory.instance.textNode("Prio3Count"));
         runIntegrationTest(
-                (leaderUri, helperUri, taskId) -> Client.createPrio3Count(leaderUri, helperUri, taskId, TIME_PRECISION_SECONDS),
+                (leaderUri, helperUri, taskId) -> Client.createPrio3Count(mockContext, leaderUri, helperUri, taskId, TIME_PRECISION_SECONDS),
                 vdaf,
                 new Boolean[] { true, true, true, true, false, false, false, false, false, false },
                 new TextNode("4")
@@ -104,7 +123,7 @@ public class JanusIntegrationTest {
         vdaf.set("type", JsonNodeFactory.instance.textNode("Prio3Sum"));
         vdaf.set("bits", JsonNodeFactory.instance.textNode("16"));
         runIntegrationTest(
-                (leaderUri, helperUri, taskId) -> Client.createPrio3Sum(leaderUri, helperUri, taskId, TIME_PRECISION_SECONDS, 16),
+                (leaderUri, helperUri, taskId) -> Client.createPrio3Sum(mockContext, leaderUri, helperUri, taskId, TIME_PRECISION_SECONDS, 16),
                 vdaf,
                 new Long[] { 31865L, 42987L, 30615L, 504L, 30113L },
                 new TextNode("136084")
@@ -123,7 +142,7 @@ public class JanusIntegrationTest {
         expectedResult.add("449");
         expectedResult.add("711");
         runIntegrationTest(
-                (leaderUri, helperUri, taskId) -> Client.createPrio3SumVec(leaderUri, helperUri, taskId, TIME_PRECISION_SECONDS, 3, 8, 4),
+                (leaderUri, helperUri, taskId) -> Client.createPrio3SumVec(mockContext, leaderUri, helperUri, taskId, TIME_PRECISION_SECONDS, 3, 8, 4),
                 vdaf,
                 new long[][] {
                         { 178, 26, 198 },
@@ -148,7 +167,7 @@ public class JanusIntegrationTest {
         expectedResult.add("2");
         expectedResult.add("4");
         runIntegrationTest(
-                (leaderUri, helperUri, taskId) -> Client.createPrio3Histogram(leaderUri, helperUri, taskId, TIME_PRECISION_SECONDS, 4, 2),
+                (leaderUri, helperUri, taskId) -> Client.createPrio3Histogram(mockContext, leaderUri, helperUri, taskId, TIME_PRECISION_SECONDS, 4, 2),
                 vdaf,
                 new Long[] { 2L, 3L, 3L, 3L, 1L, 0L, 3L, 2L },
                 expectedResult
@@ -301,6 +320,7 @@ public class JanusIntegrationTest {
         Client<M> construct(URI leaderUri, URI helperUri, TaskId taskId);
     }
 
+    /** @noinspection NewClassNamingConvention */
     private static class InteropApi {
         private final URI endpoint;
 
@@ -340,6 +360,7 @@ public class JanusIntegrationTest {
         }
     }
 
+    /** @noinspection NewClassNamingConvention */
     private static class AggregatorInteropApi extends InteropApi {
         AggregatorInteropApi(URI endpoint) {
             super(endpoint);
@@ -385,6 +406,7 @@ public class JanusIntegrationTest {
         }
     }
 
+    /** @noinspection NewClassNamingConvention */
     private static class CollectorInteropApi extends InteropApi {
         CollectorInteropApi(URI endpoint) {
             super(endpoint);
@@ -429,6 +451,7 @@ public class JanusIntegrationTest {
         }
     }
 
+    /** @noinspection NewClassNamingConvention */
     private static class InteropApiException extends Exception {
         public InteropApiException(String message) {
             super(message);

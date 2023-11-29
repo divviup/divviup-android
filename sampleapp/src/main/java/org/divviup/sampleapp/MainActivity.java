@@ -1,5 +1,6 @@
 package org.divviup.sampleapp;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -112,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
             boolean measurement = index == R.id.trueRadioButton;
 
             executorService.submit(
-                    new ReportSubmissionJob(view, leaderUri, helperUri, taskId, timePrecision, measurement)
+                    new ReportSubmissionJob(this, view, leaderUri, helperUri, taskId, timePrecision, measurement)
             );
         });
     }
@@ -126,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
     private static class ReportSubmissionJob implements Runnable {
         private static final String TAG = "ReportSubmissionJob";
 
+        private final Context context;
         private final View view;
         private final URI leaderEndpoint, helperEndpoint;
         private final TaskId taskId;
@@ -133,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
         private final boolean measurement;
 
         public ReportSubmissionJob(
+                Context context,
                 View view,
                 URI leaderEndpoint,
                 URI helperEndpoint,
@@ -140,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
                 long timePrecisionSeconds,
                 boolean measurement
         ) {
+            this.context = context;
             this.view = view;
             this.leaderEndpoint = leaderEndpoint;
             this.helperEndpoint = helperEndpoint;
@@ -151,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             Handler handler = new Handler(Looper.getMainLooper());
 
-            Client<Boolean> client = Client.createPrio3Count(leaderEndpoint, helperEndpoint, taskId, timePrecisionSeconds);
+            Client<Boolean> client = Client.createPrio3Count(context, leaderEndpoint, helperEndpoint, taskId, timePrecisionSeconds);
             try {
                 client.sendMeasurement(measurement);
                 handler.post(

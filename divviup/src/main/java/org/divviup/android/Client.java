@@ -1,14 +1,20 @@
 package org.divviup.android;
 
-import org.apache.commons.io.IOUtils;
+import android.content.Context;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
+
+import okhttp3.Cache;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 /**
  * A client that can submit reports to a particular DAP task. Objects of this class are immutable,
@@ -18,7 +24,9 @@ import java.util.Arrays;
  */
 public class Client<M> {
     private static final String HPKE_CONFIG_LIST_CONTENT_TYPE = "application/dap-hpke-config-list";
-    private static final String REPORT_CONTENT_TYPE = "application/dap-report";
+    private static final MediaType REPORT_CONTENT_TYPE = MediaType.get("application/dap-report");
+    private static final long DISK_CACHE_SIZE = 1024 * 100;
+    private static OkHttpClient HTTP_CLIENT = null;
 
     static {
         System.loadLibrary("divviup_android");
@@ -28,9 +36,10 @@ public class Client<M> {
     private final TaskId taskId;
     private final long timePrecisionSeconds;
     private final ReportPreparer<M> reportPreparer;
-
+    private final OkHttpClient client;
 
     private Client(
+            Context context,
             URI leaderEndpoint,
             URI helperEndpoint,
             TaskId taskId,
@@ -54,12 +63,36 @@ public class Client<M> {
         this.taskId = taskId;
         this.timePrecisionSeconds = timePrecisionSeconds;
         this.reportPreparer = reportPreparer;
+
+        this.client = getHTTPClient(context);
+    }
+
+    private static synchronized OkHttpClient getHTTPClient(Context context) {
+        // The same cache directory may not be used with multiple Cache instances, and OkHttpClient
+        // has an internal connection pool, so we construct a singleton client object. It is not
+        // necessary to shut down the client, as threads and connections will be cleaned up when
+        // idle automatically.
+        if (HTTP_CLIENT == null) {
+            File cacheDir = new File(context.getCacheDir(), "divviup-http");
+            Cache cache = new Cache(cacheDir, DISK_CACHE_SIZE);
+            HTTP_CLIENT = new OkHttpClient.Builder().addNetworkInterceptor(chain -> {
+                Request request = chain
+                        .request()
+                        .newBuilder()
+                        .header("User-Agent", getUserAgent())
+                        .build();
+                return chain.proceed(request);
+            }).cache(cache).build();
+        }
+        return HTTP_CLIENT;
     }
 
     /**
      * Constructs a client for a DAP task using the Prio3Count VDAF. Measurements are
      * <code>Boolean</code>s. The aggregate result is the number of <code>true</code> measurements.
      *
+     * @param context                   the app's {@link Context}. This is used to access the cache
+     *                                  directory.
      * @param leaderEndpoint            the URI of the leader aggregator's HTTPS endpoint
      * @param helperEndpoint            the URI of the helper aggregator's HTTPS endpoint
      * @param taskId                    the {@link TaskId} of the DAP task
@@ -70,12 +103,14 @@ public class Client<M> {
      *                                  number
      */
     public static Client<Boolean> createPrio3Count(
+            Context context,
             URI leaderEndpoint,
             URI helperEndpoint,
             TaskId taskId,
             long timePrecisionSeconds
     ) {
         return new Client<>(
+                context,
                 leaderEndpoint,
                 helperEndpoint,
                 taskId,
@@ -89,6 +124,8 @@ public class Client<M> {
      * integers. Valid measurements must be greater than or equal to zero, and less than
      * <code>2 ^ bits</code>. The aggregate result is the sum of all measurements.
      *
+     * @param context                   the app's {@link Context}. This is used to access the cache
+     *                                  directory.
      * @param leaderEndpoint            the URI of the leader aggregator's HTTPS endpoint
      * @param helperEndpoint            the URI of the helper aggregator's HTTPS endpoint
      * @param taskId                    the {@link TaskId} of the DAP task
@@ -101,6 +138,7 @@ public class Client<M> {
      *                                  number
      */
     public static Client<Long> createPrio3Sum(
+            Context context,
             URI leaderEndpoint,
             URI helperEndpoint,
             TaskId taskId,
@@ -108,6 +146,7 @@ public class Client<M> {
             long bits
     ) {
         return new Client<>(
+                context,
                 leaderEndpoint,
                 helperEndpoint,
                 taskId,
@@ -122,6 +161,8 @@ public class Client<M> {
      * every integer be greater than or equal to zero, and less than <code>2 ^ bits</code>. The
      * aggregate result is the element-wise sum of all measurements.
      *
+     * @param context                   the app's {@link Context}. This is used to access the cache
+     *                                  directory.
      * @param leaderEndpoint            the URI of the leader aggregator's HTTPS endpoint
      * @param helperEndpoint            the URI of the helper aggregator's HTTPS endpoint
      * @param taskId                    the {@link TaskId} of the DAP task
@@ -137,6 +178,7 @@ public class Client<M> {
      *                                  number
      */
     public static Client<long[]> createPrio3SumVec(
+            Context context,
             URI leaderEndpoint,
             URI helperEndpoint,
             TaskId taskId,
@@ -146,6 +188,7 @@ public class Client<M> {
             long chunkLength
     ) {
         return new Client<>(
+                context,
                 leaderEndpoint,
                 helperEndpoint,
                 taskId,
@@ -160,6 +203,8 @@ public class Client<M> {
      * zero, and less than the <code>length</code> parameter. The aggregate result counts how many
      * times each bucket index appeared in a measurement.
      *
+     * @param context                   the app's {@link Context}. This is used to access the cache
+     *                                  directory.
      * @param leaderEndpoint            the URI of the leader aggregator's HTTPS endpoint
      * @param helperEndpoint            the URI of the helper aggregator's HTTPS endpoint
      * @param taskId                    the {@link TaskId} of the DAP task
@@ -173,6 +218,7 @@ public class Client<M> {
      *                                  number
      */
     public static Client<Long> createPrio3Histogram(
+            Context context,
             URI leaderEndpoint,
             URI helperEndpoint,
             TaskId taskId,
@@ -181,6 +227,7 @@ public class Client<M> {
             long chunkLength
     ) {
         return new Client<>(
+                context,
                 leaderEndpoint,
                 helperEndpoint,
                 taskId,
@@ -205,46 +252,43 @@ public class Client<M> {
 
         String path = "tasks/" + this.taskId.encodeToString() + "/reports";
         URL url = leaderEndpoint.resolve(path).toURL();
-        HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-        connection.setRequestMethod("PUT");
-        connection.setRequestProperty("User-Agent", getUserAgent());
-        connection.setRequestProperty("Content-Type", REPORT_CONTENT_TYPE);
-        connection.setDoOutput(true);
-        connection.setFixedLengthStreamingMode(report.length);
-        connection.connect();
-        OutputStream out = connection.getOutputStream();
-        IOUtils.write(report, out);
-        out.close();
-        int code = connection.getResponseCode();
-        if (code >= 400) {
-            throw new IOException(
-                    "aggregator returned HTTP response code " + code + " when uploading report"
-            );
+        RequestBody body = RequestBody.create(report, REPORT_CONTENT_TYPE);
+        Request request = new Request.Builder().url(url).put(body).build();
+        try (Response response = client.newCall(request).execute()) {
+            int code = response.code();
+            if (code >= 400) {
+                throw new IOException(
+                        "aggregator returned HTTP response code " + code + " when uploading report"
+                );
+            }
         }
     }
 
     private HpkeConfigList fetchHPKEConfigList(URI aggregatorEndpoint, TaskId taskId) throws IOException {
         String path = "hpke_config?task_id=" + taskId.encodeToString();
         URL url = aggregatorEndpoint.resolve(path).toURL();
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestProperty("User-Agent", getUserAgent());
-        connection.setUseCaches(true);
-        connection.setDoInput(true);
-        connection.connect();
-        int code = connection.getResponseCode();
-        if (code >= 400) {
-            throw new IOException(
-                    "aggregator returned HTTP response code " + code + " when fetching HPKE configs"
-            );
+        Request request = new Request.Builder().url(url).build();
+        try (Response response = client.newCall(request).execute()) {
+            int code = response.code();
+            if (code >= 400) {
+                throw new IOException(
+                        "aggregator returned HTTP response code " + code + " when fetching HPKE configs"
+                );
+            }
+            String contentType = response.header("Content-Type");
+            if (contentType == null) {
+                throw new IOException("no content type header in HPKE configs response");
+            }
+            if (!contentType.equals(HPKE_CONFIG_LIST_CONTENT_TYPE)) {
+                throw new IOException("wrong content type for HPKE configs: " + contentType);
+            }
+            ResponseBody body = response.body();
+            // This assertion is OK because we got this response from execute(), and we only
+            // retrieve the body once.
+            assert body != null;
+            byte[] data = body.bytes();
+            return new HpkeConfigList(data);
         }
-        String contentType = connection.getContentType();
-        if (!contentType.equals(HPKE_CONFIG_LIST_CONTENT_TYPE)) {
-            throw new IOException("wrong content type for HPKE configs: " + contentType);
-        }
-        InputStream in = connection.getInputStream();
-        byte[] data = IOUtils.toByteArray(in);
-        in.close();
-        return new HpkeConfigList(data);
     }
 
     private static String getUserAgent() {

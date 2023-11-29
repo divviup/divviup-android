@@ -36,7 +36,7 @@ public class MyRunnable implements Runnable {
             URI helperEndpoint = new URI("https://<your helper here>/");
             TaskId taskId = TaskId.parse("<your DAP TaskId here>");
             long timePrecisionSeconds = <your time precision here>;
-            Client<Boolean> client = Client.createPrio3Count(leaderEndpoint, helperEndpoint, taskId, timePrecisionSeconds);
+            Client<Boolean> client = Client.createPrio3Count(context, leaderEndpoint, helperEndpoint, taskId, timePrecisionSeconds);
             client.sendMeasurement(<your measurement here>);
         } catch (Exception e) {
             Log.e("MyRunnable", "upload failed", e);
