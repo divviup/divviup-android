@@ -6,6 +6,8 @@ android {
     namespace = "org.divviup.sampleapp"
     compileSdk = 34
 
+    ndkVersion = "26.1.10909125"
+
     defaultConfig {
         applicationId = "org.divviup.sampleapp"
         minSdk = 21
