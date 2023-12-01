@@ -2,6 +2,7 @@ plugins {
     id("com.android.library")
     id("org.mozilla.rust-android-gradle.rust-android")
     id("maven-publish")
+    signing
 }
 
 android {
@@ -126,5 +127,38 @@ publishing {
                 }
             }
         }
+    }
+
+    repositories {
+        maven {
+            name = "OSSRH"
+
+            val releasesRepoUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            val snapshotsRepoUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+            url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
+
+            authentication {
+                register<BasicAuthentication>("basic")
+            }
+
+            credentials {
+                val ossrhUsername: String? by project
+                val ossrhPassword: String? by project
+                username = ossrhUsername
+                password = ossrhPassword
+            }
+        }
+    }
+}
+
+signing {
+    sign(publishing.publications["release"])
+
+    val signingKey: String? by project
+    val signingPassword: String? by project
+    if (signingKey != null && signingPassword != null) {
+        useInMemoryPgpKeys(signingKey, signingPassword)
+    } else {
+        useGpgCmd()
     }
 }
