@@ -137,10 +137,6 @@ publishing {
             val snapshotsRepoUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
             url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
 
-            authentication {
-                register<BasicAuthentication>("basic")
-            }
-
             credentials {
                 val ossrhUsername: String? by project
                 val ossrhPassword: String? by project
