@@ -33,4 +33,9 @@ jobs:
         key: ${{ steps.rust-toolchain.outputs.cachekey }}
         workspaces: divviup/rust
     - name: Upload artifacts
-      run: ./gradlew :divviup:uploadArtifacts
+      env:
+        ORG_GRADLE_PROJECT_ossrhUsername: ${{ secrets.OSSRH_USERNAME }}
+        ORG_GRADLE_PROJECT_ossrhPassword: ${{ secrets.OSSRH_PASSWORD }}
+        ORG_GRADLE_PROJECT_signingKey: ${{ secrets.PGP_SIGNING_KEY }}
+        ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.PGP_SIGNING_PASSPHRASE }}
+      run: ./gradlew :divviup:publishReleasePublicationToOSSRHRepository
