@@ -34,7 +34,7 @@ jobs:
         workspaces: divviup/rust
     - name: Upload artifacts
       env:
-        ORG_GRADLE_PROJECT_ossrhUsername: ${{ secrets.OSSRH_USERNAME }}
+        ORG_GRADLE_PROJECT_ossrhUsername: ${{ vars.OSSRH_USERNAME }}
         ORG_GRADLE_PROJECT_ossrhPassword: ${{ secrets.OSSRH_PASSWORD }}
         ORG_GRADLE_PROJECT_signingKey: ${{ secrets.PGP_SIGNING_KEY }}
         ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.PGP_SIGNING_PASSPHRASE }}
