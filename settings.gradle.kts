@@ -10,6 +10,12 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        repositories {
+            maven {
+                name = "OSSRH Snapshots"
+                url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+            }
+        }
     }
 }
 
