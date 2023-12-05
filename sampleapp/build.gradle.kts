@@ -34,7 +34,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":divviup"))
+    implementation("org.divviup.android:divviup-android:0.1.0")
 
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.10.0")

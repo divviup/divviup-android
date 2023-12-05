@@ -10,6 +10,10 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven {
+            name = "Staging"
+            url = uri("https://s01.oss.sonatype.org/content/repositories/orgdivviup-1000")
+        }
     }
 }
 
