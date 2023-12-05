@@ -10,15 +10,32 @@ and releases.
 
 | Package version     | Git branch | Protocol version                    | Conformant? | Status    |
 |---------------------|------------|-------------------------------------|-------------|-----------|
-| 0.1.0 (forthcoming) | `main`     | [`draft-ietf-ppm-dap-07`][draft-07] | Yes         | Supported |
+| 0.1.0 | `main`     | [`draft-ietf-ppm-dap-07`][draft-07] | Yes         | Supported |
 
 [draft-07]: https://datatracker.ietf.org/doc/draft-ietf-ppm-dap/07/
 
 ## Usage
 
-Note that no published releases are available yet, so you must build this
-library from source for now. Add the AAR file to your project. Construct a
-`Client` from your DAP task's parameters, and use it to send report as follows.
+Ensure that Maven Central is in the list of repositories from which
+dependencies are resolved. Add the library to your project as follows.
+
+```groovy
+// build.gradle
+
+dependencies {
+    implementation 'org.divviup.android:divviup-android:0.1.0'
+}
+```
+
+```kotlin
+// build.gradle.kts
+
+dependencies {
+    implementation("org.divviup.android:divviup-android:0.1.0")
+}
+```
+
+Construct a `Client` from your DAP task's parameters, and use it to send report as follows.
 (Note that this should be done off the main thread)
 
 ```java
