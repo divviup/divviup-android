@@ -1,3 +1,5 @@
+#![deny(unsafe_op_in_unsafe_fn)]
+
 use std::{ptr, slice};
 
 use janus_core::hpke::{self, is_hpke_config_supported, HpkeApplicationInfo, Label};
@@ -405,16 +407,16 @@ unsafe fn parse_task_id<'local, 'a>(
     array: &'a JByteArray<'local>,
     env: &'a mut JNIEnv<'local>,
 ) -> Result<TaskId, String> {
-    // Safety: All safety requirements of get_array_elements() are imposed on the caller. The [u8]
-    // slice aliases a [i8] slice, and the two have the same memory layout. The backing memory is
-    // managed by the JVM. The memory is valid for long enough because it is only released when the
-    // `AutoElements` struct is dropped, which happens after the last use of the slices.
-    let elements = env
-        .get_array_elements(array, ReleaseMode::NoCopyBack)
-        .map_err(|e| e.to_string())?;
+    // Safety: All safety requirements of get_array_elements() are imposed on the caller.
+    let elements_res = unsafe { env.get_array_elements(array, ReleaseMode::NoCopyBack) };
+    let elements = elements_res.map_err(|e| e.to_string())?;
     let signed_slice: &[i8] = &elements[..];
+    // Safety: The [u8] slice aliases a [i8] slice, and the two have the same memory layout. The
+    // backing memory is managed by the JVM. The memory is valid for long enough because it is only
+    // released when the `AutoElements` struct is dropped, which happens after the last use of the
+    // slices.
     let bytes: &[u8] =
-        slice::from_raw_parts(signed_slice.as_ptr() as *const u8, signed_slice.len());
+        unsafe { slice::from_raw_parts(signed_slice.as_ptr() as *const u8, signed_slice.len()) };
     TaskId::try_from(bytes).map_err(|e| e.to_string())
 }
 
@@ -432,16 +434,16 @@ unsafe fn decode_hpke_config_list<'local, 'a>(
     array: &'a JByteArray<'local>,
     env: &'a mut JNIEnv<'local>,
 ) -> Result<HpkeConfigList, String> {
-    // Safety: All safety requirements of get_array_elements() are imposed on the caller. The [u8]
-    // slice aliases a [i8] slice, and the two have the same memory layout. The backing memory is
-    // managed by the JVM. The memory is valid for long enough because it is only released when the
-    // `AutoElements` struct is dropped, which happens after the last use of the slices.
-    let elements = env
-        .get_array_elements(array, ReleaseMode::NoCopyBack)
-        .map_err(|e| e.to_string())?;
+    // Safety: All safety requirements of get_array_elements() are imposed on the caller.
+    let elements_res = unsafe { env.get_array_elements(array, ReleaseMode::NoCopyBack) };
+    let elements = elements_res.map_err(|e| e.to_string())?;
     let signed_slice: &[i8] = &elements[..];
+    // Safety: The [u8] slice aliases a [i8] slice, and the two have the same memory layout. The
+    // backing memory is managed by the JVM. The memory is valid for long enough because it is only
+    // released when the `AutoElements` struct is dropped, which happens after the last use of the
+    // slices.
     let bytes: &[u8] =
-        slice::from_raw_parts(signed_slice.as_ptr() as *const u8, signed_slice.len());
+        unsafe { slice::from_raw_parts(signed_slice.as_ptr() as *const u8, signed_slice.len()) };
     HpkeConfigList::get_decoded(bytes).map_err(|e| e.to_string())
 }
 
@@ -460,9 +462,8 @@ unsafe fn convert_sumvec_measurement<'local, 'a>(
     env: &'a mut JNIEnv<'local>,
 ) -> Result<Vec<u128>, String> {
     // Safety: All safety requirements of get_array_elements() are imposed on the caller.
-    let elements = env
-        .get_array_elements(array, ReleaseMode::NoCopyBack)
-        .map_err(|e| e.to_string())?;
+    let elements_res = unsafe { env.get_array_elements(array, ReleaseMode::NoCopyBack) };
+    let elements = elements_res.map_err(|e| e.to_string())?;
     elements
         .iter()
         .map(|value| u128::try_from(*value))
@@ -488,15 +489,16 @@ fn return_new_byte_array(data: &[u8], env: &mut JNIEnv<'_>) -> Result<jbyteArray
     {
         // Safety: There are no races on this array, and it will not be aliased, because it is newly
         // created. The `AutoElements` will release its reference before the array is returned to
-        // Java code. The [u8] mutable slice points to the same memory as the [i8] slice, and the
-        // two have the same memory layout. The two mutable slices are not in use at the same time.
-        // The backing memory is managed by the JVM. The memory is valid for long enough because it
-        // is only released when the `AutoElements` struct is dropped, which happens after the last
-        // use of the slices.
+        // Java code.
         let mut elements = unsafe { env.get_array_elements(&byte_array, ReleaseMode::CopyBack) }
             .map_err(|e| e.to_string())?;
         let signed_slice: &mut [i8] = &mut elements[..];
         let len = signed_slice.len();
+        // Safety: The [u8] mutable slice points to the same memory as the [i8] slice, and the two
+        // have the same memory layout. The two mutable slices are not in use at the same time. The
+        // backing memory is managed by the JVM. The memory is valid for long enough because it is
+        // only released when the `AutoElements` struct is dropped, which happens after the last use
+        // of the slices.
         let mut_slice: &mut [u8] =
             unsafe { slice::from_raw_parts_mut(signed_slice.as_ptr() as *mut u8, len) };
         mut_slice.copy_from_slice(data);
