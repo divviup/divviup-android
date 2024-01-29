@@ -1008,9 +1008,9 @@ checksum = "af150ab688ff2122fcef229be89cb50dd66af9e01a4ff320cc137eecc9bacc38"
 
 [[package]]
 name = "janus_core"
-version = "0.6.10"
+version = "0.6.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "44d9b696881dbd12187e029e4eea5c11f709dec096aabd9d0a123f388e24ec06"
+checksum = "1f3cb810d8c280d96e31424223f9d7b443d8c9680492b3a23bd37249e000a6c2"
 dependencies = [
  "anyhow",
  "backoff",
@@ -1039,9 +1039,9 @@ dependencies = [
 
 [[package]]
 name = "janus_messages"
-version = "0.6.10"
+version = "0.6.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "80a002cda752ed988eeff701cd610304037fa1ba9f2c9e56056b6148ed657a9f"
+checksum = "dc25b5ae36dcef4d58ae907315cb9323ee1391e965cc74a8d50585f54c178ecb"
 dependencies = [
  "anyhow",
  "base64",
@@ -1478,9 +1478,9 @@ dependencies = [
 
 [[package]]
 name = "regex"
-version = "1.10.2"
+version = "1.10.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "380b951a9c5e80ddfd6136919eef32310721aa4aacd4889a8d39124b026ab343"
+checksum = "b62dbe01f0b06f9d8dc7d49e05a0785f153b00b2c227856282f671e0318c9b15"
 dependencies = [
  "aho-corasick",
  "memchr",
@@ -1490,9 +1490,9 @@ dependencies = [
 
 [[package]]
 name = "regex-automata"
-version = "0.4.3"
+version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5f804c7828047e88b2d32e2d7fe5a105da8ee3264f01902f796c8e067dc2483f"
+checksum = "5bb987efffd3c6d0d8f5f89510bb458559eab11e4f869acb20bf845e016259cd"
 dependencies = [
  "aho-corasick",
  "memchr",
