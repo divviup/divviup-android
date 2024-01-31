@@ -51,6 +51,16 @@ library.
 rustup target add armv7-linux-androideabi aarch64-linux-android i686-linux-android x86_64-linux-android
 ```
 
+### Docker
+
+[Docker][docker-install] is required for host-based integration tests against
+Janus, to confirm that reports are correctly formed, and DAP API requests are
+correct. Alternative container runtimes may be used in lieu of Docker, see the
+[Testcontainers documentation][testcontainers-docker] for details.
+
+[docker-install]: https://docs.docker.com/desktop/
+[testcontainers-docker]: https://java.testcontainers.org/supported_docker_environment/
+
 ## Building and Testing
 
 All compilation and testing is managed by Gradle targets, which can be used from
