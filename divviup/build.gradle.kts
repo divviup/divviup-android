@@ -26,6 +26,10 @@ android {
         buildConfigField("String", "VERSION", "\"" + version.toString() + "\"")
     }
 
+    testOptions {
+        targetSdk = 23
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
