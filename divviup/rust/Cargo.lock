@@ -1008,9 +1008,9 @@ checksum = "af150ab688ff2122fcef229be89cb50dd66af9e01a4ff320cc137eecc9bacc38"
 
 [[package]]
 name = "janus_core"
-version = "0.6.12"
+version = "0.6.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "34c434d6e2b01b9e300f30ee842967dfc3ee1479c6cfac080da50f88566c253b"
+checksum = "fbaa50450e69bc6e46564456fb14f124aa5002009e3419171b87cbdfcd13503c"
 dependencies = [
  "anyhow",
  "backoff",
@@ -1039,9 +1039,9 @@ dependencies = [
 
 [[package]]
 name = "janus_messages"
-version = "0.6.12"
+version = "0.6.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "207073ccd335b2e4e7a50f50b6bb479f32d5a0d4831935c0576159461095a5c1"
+checksum = "f73baa72c8a4e955f3ac9b2179dd88425c2f430e9782f6a5276588b0fdc4e20d"
 dependencies = [
  "anyhow",
  "base64",
@@ -1507,9 +1507,9 @@ checksum = "c08c74e62047bb2de4ff487b251e4a92e24f48745648451635cec7d591162d9f"
 
 [[package]]
 name = "reqwest"
-version = "0.11.23"
+version = "0.11.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "37b1ae8d9ac08420c66222fb9096fc5de435c3c48542bc5336c51892cffafb41"
+checksum = "c6920094eb85afde5e4a138be3f2de8bbdf28000f0029e72c45025a56b042251"
 dependencies = [
  "base64",
  "bytes",
@@ -1533,6 +1533,7 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_urlencoded",
+ "sync_wrapper",
  "system-configuration",
  "tokio",
  "tokio-rustls",
@@ -1833,6 +1834,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "sync_wrapper"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2047c6ded9c721764247e62cd3b03c09ffc529b2ba5b10ec482ae507a4a70160"
+
+[[package]]
 name = "system-configuration"
 version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1896,9 +1903,9 @@ checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 
 [[package]]
 name = "tokio"
-version = "1.35.0"
+version = "1.36.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "841d45b238a16291a4e1584e61820b8ae57d696cc5015c459c229ccc6990cc1c"
+checksum = "61285f6515fa018fb2d1e46eb21223fff441ee8db5d0f1435e8ab4f5cdb80931"
 dependencies = [
  "backtrace",
  "bytes",
@@ -2005,9 +2012,9 @@ dependencies = [
 
 [[package]]
 name = "trillium"
-version = "0.2.13"
+version = "0.2.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b4a1ea726106cfe880370300042a8712b0911f30a63920597437c76cda47893"
+checksum = "acca545b3933760b2b88b822d83e62ccf9aab8c24d16ae82e56df1f2a5af11c1"
 dependencies = [
  "async-trait",
  "futures-lite",
@@ -2017,9 +2024,9 @@ dependencies = [
 
 [[package]]
 name = "trillium-http"
-version = "0.3.11"
+version = "0.3.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d9b5f80f30b6958cff1e0b5b8587c6e8d1fe2f7e6ba656ea1ef115f745f9106d"
+checksum = "f8afd3a7e9a46df93d81229fcd2011e089ed522c55ef633edee8893a23cb88e9"
 dependencies = [
  "encoding_rs",
  "futures-lite",
