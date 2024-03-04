@@ -6,7 +6,7 @@ android {
     namespace = "org.divviup.sampleapp"
     compileSdk = 34
 
-    ndkVersion = "26.1.10909125"
+    ndkVersion = "26.2.11394342"
 
     defaultConfig {
         applicationId = "org.divviup.sampleapp"
