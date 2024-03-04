@@ -59,7 +59,7 @@ dependencies {
     testImplementation("ch.qos.logback:logback-core:1.5.0")
     testImplementation("ch.qos.logback:logback-classic:1.5.0")
     testImplementation("commons-io:commons-io:2.15.1")
-    testImplementation("org.mockito:mockito-core:5.10.0")
+    testImplementation("org.mockito:mockito-core:5.11.0")
     androidTestImplementation(project(":divviup:commontest"))
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
