@@ -51,11 +51,11 @@ import java.security.SecureRandom;
 public class JanusIntegrationTest {
     /** @noinspection SpellCheckingInspection */
     private static final DockerImageName JANUS_INTEROP_AGGREGATOR = DockerImageName.parse(
-            "us-west2-docker.pkg.dev/divviup-artifacts-public/janus/janus_interop_aggregator:0.6.3@sha256:8cc873f7a8be459fe2dbecdf78561806b514ac98b4d644dc9a7f6bb25bb9df02"
+            "us-west2-docker.pkg.dev/divviup-artifacts-public/janus/janus_interop_aggregator:0.7.0-prerelease-4@sha256:e85342f168e2cb202bd1eeb7941bd81facb333fb4f114547508e6f9ff82e3da2"
     );
     /** @noinspection SpellCheckingInspection */
     private static final DockerImageName JANUS_INTEROP_COLLECTOR = DockerImageName.parse(
-            "us-west2-docker.pkg.dev/divviup-artifacts-public/janus/janus_interop_collector:0.6.3@sha256:982110bc29842639355830339b95fac77432cbbcc28df0cd07daf91551570602"
+            "us-west2-docker.pkg.dev/divviup-artifacts-public/janus/janus_interop_collector:0.7.0-prerelease-4@sha256:617df823da7efe5566eb53e4cbdbe983b027b2369ad430b4fa7de6e972353488"
     );
     private static final int BASE64_FLAGS = Base64.NO_PADDING | Base64.NO_WRAP | Base64.URL_SAFE;
     private static final int TIME_PRECISION_SECONDS = 3600;

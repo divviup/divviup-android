@@ -459,7 +459,7 @@ dependencies = [
 
 [[package]]
 name = "divviup-android"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "janus_core",
  "janus_messages",
@@ -1008,9 +1008,9 @@ checksum = "af150ab688ff2122fcef229be89cb50dd66af9e01a4ff320cc137eecc9bacc38"
 
 [[package]]
 name = "janus_core"
-version = "0.6.18"
+version = "0.7.0-prerelease-4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "da9fe8667dcc30e43a165e4e096ced5e63670f43e2da89774018090a4e591ada"
+checksum = "738f73712569904157087681c7e8d8d921442d037ab7032165c406e711d47f2e"
 dependencies = [
  "anyhow",
  "backoff",
@@ -1040,9 +1040,9 @@ dependencies = [
 
 [[package]]
 name = "janus_messages"
-version = "0.6.18"
+version = "0.7.0-prerelease-4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b5deb16a4f278211bb80467aa27968084ed2722e6350f8547c237ba663aad268"
+checksum = "825be55da31143cf037445de0b6f980e943d1678aa642729b9226179367d87b5"
 dependencies = [
  "anyhow",
  "base64",
@@ -1353,9 +1353,9 @@ checksum = "5b40af805b3121feab8a3c29f04d8ad262fa8e0561883e7653e024ae4479e6de"
 
 [[package]]
 name = "prio"
-version = "0.15.4"
+version = "0.16.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "652d2b7c72738f40da1441d55876da8ea9b532b2ad02b41c97caef8d2ed0562e"
+checksum = "0a5247468645c68d3f5eaa958ca8b7ce5539bb604a1dcb9baa6a3cb7831f8fa8"
 dependencies = [
  "aes",
  "bitvec",
@@ -1364,6 +1364,7 @@ dependencies = [
  "fiat-crypto",
  "fixed",
  "getrandom",
+ "hmac",
  "num-bigint",
  "num-integer",
  "num-iter",
@@ -1373,6 +1374,7 @@ dependencies = [
  "rand_core 0.6.4",
  "rayon",
  "serde",
+ "sha2",
  "sha3",
  "subtle",
  "thiserror",
