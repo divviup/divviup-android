@@ -8,11 +8,14 @@ An Android client library for the [Distributed Aggregation Protocol][DAP].
 The following versions of the DAP protocol are supported by different branches
 and releases.
 
-| Package version     | Git branch | Protocol version                    | Conformant? | Status    |
-|---------------------|------------|-------------------------------------|-------------|-----------|
-| 0.1.0 | `main`     | [`draft-ietf-ppm-dap-07`][draft-07] | Yes         | Supported |
+| Package version | Git branch    | Protocol version                    | Conformant?                 | Status    |
+|-----------------|---------------|-------------------------------------|-----------------------------|-----------|
+| 0.1.0           | `release/0.1` | [`draft-ietf-ppm-dap-07`][draft-07] | Yes                         | Supported |
+| 0.2.0           | `main`        | [`draft-ietf-ppm-dap-09`][draft-09] | [Partially][draft-09-issue] | Supported |
 
 [draft-07]: https://datatracker.ietf.org/doc/draft-ietf-ppm-dap/07/
+[draft-09]: https://datatracker.ietf.org/doc/draft-ietf-ppm-dap/09/
+[draft-09-issue]: https://github.com/divviup/divviup-android/issues/101
 
 ## Usage
 

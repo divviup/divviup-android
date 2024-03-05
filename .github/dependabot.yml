@@ -47,3 +47,45 @@ updates:
     schedule:
       interval: weekly
     target-branch: main
+
+  - package-ecosystem: gradle
+    directory: /
+    registries:
+      - google
+    schedule:
+      interval: weekly
+    groups:
+      agp:
+        patterns:
+          - com.android.application
+          - com.android.library
+      logback:
+        patterns:
+          - ch.qos.logback:*
+      jetpack:
+        patterns:
+          - androidx.*
+    target-branch: release/0.1
+
+  - package-ecosystem: cargo
+    directory: divviup/rust
+    schedule:
+      interval: weekly
+    ignore:
+      - dependency-name: prio
+        update-types:
+          - version-update:semver-minor
+      - dependency-name: janus_*
+        update-types:
+          - version-update:semver-minor
+    groups:
+      janus:
+        patterns:
+          - janus_*
+    target-branch: release/0.1
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    target-branch: release/0.1
