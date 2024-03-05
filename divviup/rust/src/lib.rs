@@ -177,7 +177,11 @@ fn prepare_report_prio3count_inner<'local, 'a>(
     env: &'a mut JNIEnv<'local>,
 ) -> Result<Vec<u8>, String> {
     let vdaf = Prio3::new_count(2).map_err(|e| e.to_string())?;
-    let measurement = measurement as u64;
+    let measurement = match measurement {
+        0 => false,
+        1 => true,
+        _ => return Err("unexpected value for jboolean".to_string()),
+    };
     prepare_report_generic(
         task_id_byte_array,
         leader_hpke_config_list_byte_array,
@@ -318,9 +322,9 @@ where
     let (public_share, input_shares) = vdaf
         .shard(measurement, report_id.as_ref())
         .map_err(|e| e.to_string())?;
-    let encoded_leader_input_share = input_shares[0].get_encoded();
-    let encoded_helper_input_share = input_shares[1].get_encoded();
-    let encoded_public_share = public_share.get_encoded();
+    let encoded_leader_input_share = input_shares[0].get_encoded().map_err(|e| e.to_string())?;
+    let encoded_helper_input_share = input_shares[1].get_encoded().map_err(|e| e.to_string())?;
+    let encoded_public_share = public_share.get_encoded().map_err(|e| e.to_string())?;
     assemble_report(
         task_id_byte_array,
         leader_hpke_config_list_byte_array,
@@ -371,8 +375,7 @@ fn assemble_report<'local, 'a>(
         &leader_hpke_config,
         encoded_leader_input_share,
         encoded_public_share.clone(),
-    )
-    .map_err(|e| e.to_string())?;
+    )?;
     let helper_encrypted_input_share = encrypt_input_share(
         task_id,
         &report_metadata,
@@ -380,8 +383,7 @@ fn assemble_report<'local, 'a>(
         &helper_hpke_config,
         encoded_helper_input_share,
         encoded_public_share.clone(),
-    )
-    .map_err(|e| e.to_string())?;
+    )?;
 
     let report = Report::new(
         report_metadata,
@@ -389,7 +391,7 @@ fn assemble_report<'local, 'a>(
         leader_encrypted_input_share,
         helper_encrypted_input_share,
     );
-    Ok(report.get_encoded())
+    report.get_encoded().map_err(|e| e.to_string())
 }
 
 /// Read from a Java byte[] array, and interpret the bytes as a [`TaskId`].
@@ -541,12 +543,17 @@ fn encrypt_input_share(
     hpke_config: &HpkeConfig,
     input_share: Vec<u8>,
     encoded_public_share: Vec<u8>,
-) -> Result<HpkeCiphertext, hpke::Error> {
-    let plaintext = PlaintextInputShare::new(Vec::new(), input_share).get_encoded();
+) -> Result<HpkeCiphertext, String> {
+    let plaintext = PlaintextInputShare::new(Vec::new(), input_share)
+        .get_encoded()
+        .map_err(|e| e.to_string())?;
     hpke::seal(
         hpke_config,
         &HpkeApplicationInfo::new(&Label::InputShare, &Role::Client, receiver_role),
         &plaintext,
-        &InputShareAad::new(task_id, report_metadata.clone(), encoded_public_share).get_encoded(),
+        &InputShareAad::new(task_id, report_metadata.clone(), encoded_public_share)
+            .get_encoded()
+            .map_err(|e| e.to_string())?,
     )
+    .map_err(|e| e.to_string())
 }
