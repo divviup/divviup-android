@@ -150,8 +150,10 @@ pub extern "system" fn Java_org_divviup_android_Client_00024Prio3HistogramReport
 enum Error {
     #[error("message encoding failed: {0}")]
     Codec(#[from] prio::codec::CodecError),
-    #[error("{0}")]
+    #[error(transparent)]
     Hpke(#[from] janus_core::hpke::Error),
+    #[error("invalid parameter: {0}")]
+    InvalidParameter(&'static str),
     #[error("unexpected value for jboolean")]
     JBoolean,
     #[error("JNI error: {0}")]
@@ -160,8 +162,8 @@ enum Error {
     Message(#[from] janus_messages::Error),
     #[error("aggregator provided empty HPKE config list")]
     MissingHpkeConfigs,
-    #[error("integer conversion error: {0}")]
-    TryFromInt(#[from] std::num::TryFromIntError),
+    #[error("generated report is too large")]
+    ReportTooLarge,
     #[error("VDAF error: {0}")]
     Vdaf(#[from] prio::vdaf::VdafError),
 }
@@ -224,14 +226,20 @@ fn prepare_report_prio3sum_inner<'local, 'a>(
     measurement: jlong,
     env: &'a mut JNIEnv<'local>,
 ) -> Result<Vec<u8>, Error> {
-    let vdaf = Prio3::new_sum(2, bits.try_into()?)?;
+    let bits = bits
+        .try_into()
+        .map_err(|_| Error::InvalidParameter("bits"))?;
+    let vdaf = Prio3::new_sum(2, bits)?;
+    let measurement = measurement
+        .try_into()
+        .map_err(|_| Error::InvalidParameter("measurement"))?;
     prepare_report_generic(
         task_id_byte_array,
         leader_hpke_config_list_byte_array,
         helper_hpke_config_list_byte_array,
         timestamp,
         vdaf,
-        &measurement.try_into()?,
+        &measurement,
         env,
     )
 }
@@ -252,12 +260,16 @@ fn prepare_report_prio3sumvec_inner<'local, 'a>(
     measurement: &'a JLongArray<'local>,
     env: &'a mut JNIEnv<'local>,
 ) -> Result<Vec<u8>, Error> {
-    let vdaf = Prio3::new_sum_vec(
-        2,
-        bits.try_into()?,
-        length.try_into()?,
-        chunk_length.try_into()?,
-    )?;
+    let bits = bits
+        .try_into()
+        .map_err(|_| Error::InvalidParameter("bits"))?;
+    let length = length
+        .try_into()
+        .map_err(|_| Error::InvalidParameter("length"))?;
+    let chunk_length = chunk_length
+        .try_into()
+        .map_err(|_| Error::InvalidParameter("chunk_length"))?;
+    let vdaf = Prio3::new_sum_vec(2, bits, length, chunk_length)?;
 
     // Safety: The copy of the measurement array is not mutated again from the Java side once it is
     // passed in. Only one `AutoElements` is constructed from it, in this call.
@@ -289,16 +301,23 @@ fn prepare_report_prio3histogram_inner<'local, 'a>(
     measurement: jlong,
     env: &'a mut JNIEnv<'local>,
 ) -> Result<Vec<u8>, Error> {
-    let length = length.try_into()?;
-    let chunk_length = chunk_length.try_into()?;
+    let length = length
+        .try_into()
+        .map_err(|_| Error::InvalidParameter("length"))?;
+    let chunk_length = chunk_length
+        .try_into()
+        .map_err(|_| Error::InvalidParameter("chunk_length"))?;
     let vdaf = Prio3::new_histogram(2, length, chunk_length)?;
+    let measurement = measurement
+        .try_into()
+        .map_err(|_| Error::InvalidParameter("measurement"))?;
     prepare_report_generic(
         task_id_byte_array,
         leader_hpke_config_list_byte_array,
         helper_hpke_config_list_byte_array,
         timestamp,
         vdaf,
-        &measurement.try_into()?,
+        &measurement,
         env,
     )
 }
@@ -364,7 +383,9 @@ fn assemble_report<'local, 'a>(
     let leader_hpke_config = select_hpke_config(&leader_hpke_config_list)?;
     let helper_hpke_config = select_hpke_config(&helper_hpke_config_list)?;
 
-    let time = Time::from_seconds_since_epoch(u64::try_from(timestamp)?);
+    let time = Time::from_seconds_since_epoch(
+        u64::try_from(timestamp).map_err(|_| Error::InvalidParameter("timestamp"))?,
+    );
     let report_metadata = ReportMetadata::new(report_id, time);
 
     let leader_encrypted_input_share = encrypt_input_share(
@@ -462,10 +483,11 @@ unsafe fn convert_sumvec_measurement<'local, 'a>(
 ) -> Result<Vec<u128>, Error> {
     // Safety: All safety requirements of get_array_elements() are imposed on the caller.
     let elements = unsafe { env.get_array_elements(array, ReleaseMode::NoCopyBack) }?;
-    Ok(elements
+    elements
         .iter()
         .map(|value| u128::try_from(*value))
-        .collect::<Result<Vec<_>, _>>()?)
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|_| Error::InvalidParameter("measurement: negative value not allowed in sumvec"))
 }
 
 /// Creates a new byte[] array, copies the provided data into it, and returns a raw JNI pointer to
@@ -474,7 +496,7 @@ unsafe fn convert_sumvec_measurement<'local, 'a>(
 /// This returns an error if the byte slice's length cannot fit in an i32, or if the JVM fails to
 /// create or update the array.
 fn return_new_byte_array(data: &[u8], env: &mut JNIEnv<'_>) -> Result<jbyteArray, Error> {
-    let length = data.len().try_into()?;
+    let length = data.len().try_into().map_err(|_| Error::ReportTooLarge)?;
 
     let byte_array = env.new_byte_array(length)?;
 
