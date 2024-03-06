@@ -160,15 +160,29 @@ public class MainActivity extends AppCompatActivity {
                 client.sendMeasurement(measurement);
                 handler.post(
                         () -> Snackbar.make(view, "Success!", Snackbar.LENGTH_LONG)
-                        .setAnchorView(R.id.button)
-                        .show()
+                                .setAnchorView(R.id.button)
+                                .show()
                 );
             } catch (IOException e) {
                 Log.e(TAG, "upload failed", e);
                 handler.post(
                         () -> Snackbar.make(view, "Error uploading report", Snackbar.LENGTH_LONG)
-                        .setAnchorView(R.id.button)
-                        .show()
+                                .setAnchorView(R.id.button)
+                                .show()
+                );
+            } catch (IllegalArgumentException e) {
+                Log.e(TAG, "illegal argument", e);
+                handler.post(
+                        () -> Snackbar.make(view, "Invalid task parameters", Snackbar.LENGTH_LONG)
+                                .setAnchorView(R.id.button)
+                                .show()
+                );
+            } catch (RuntimeException e) {
+                Log.e(TAG, "sharding error", e);
+                handler.post(
+                        () -> Snackbar.make(view, "Error preparing report", Snackbar.LENGTH_LONG)
+                                .setAnchorView(R.id.button)
+                                .show()
                 );
             }
         }
