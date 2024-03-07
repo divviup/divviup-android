@@ -53,5 +53,9 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout
+      uses: actions/checkout@v4
     - name: Dependency review
       uses: actions/dependency-review-action@v4
+      with:
+        config-file: './.github/dependency-review-config.yml'

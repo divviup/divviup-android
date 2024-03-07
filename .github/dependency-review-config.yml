@@ -1,0 +1,4 @@
+allow-ghsas:
+  # These are server-side vulnerabilities in Netty. We are not affected.
+  - GHSA-xpw8-rcwv-8f8p
+  - GHSA-6mjq-h674-j845
