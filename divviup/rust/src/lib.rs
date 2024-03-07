@@ -432,7 +432,7 @@ unsafe fn parse_task_id<'local, 'a>(
     // slices.
     let bytes: &[u8] =
         unsafe { slice::from_raw_parts(signed_slice.as_ptr() as *const u8, signed_slice.len()) };
-    TaskId::try_from(bytes).map_err(|e| Error::TaskId(e))
+    TaskId::try_from(bytes).map_err(Error::TaskId)
 }
 
 /// Read from a Java byte[] array, and parse an [`HpkeConfigList`] from it. This returns an error if
@@ -552,10 +552,10 @@ fn encrypt_input_share(
     encoded_public_share: Vec<u8>,
 ) -> Result<HpkeCiphertext, hpke::Error> {
     let plaintext = PlaintextInputShare::new(Vec::new(), input_share).get_encoded();
-    Ok(hpke::seal(
+    hpke::seal(
         hpke_config,
         &HpkeApplicationInfo::new(&Label::InputShare, &Role::Client, receiver_role),
         &plaintext,
         &InputShareAad::new(task_id, report_metadata.clone(), encoded_public_share).get_encoded(),
-    )?)
+    )
 }
