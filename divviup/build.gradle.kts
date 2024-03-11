@@ -54,7 +54,7 @@ dependencies {
     testImplementation(project(":divviup:commontest"))
     testImplementation("junit:junit:4.13.2")
     testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
-    testImplementation("org.testcontainers:testcontainers:1.19.6")
+    testImplementation("org.testcontainers:testcontainers:1.19.7")
     testImplementation("com.fasterxml.jackson.core:jackson-databind:2.16.2")
     testImplementation("ch.qos.logback:logback-core:1.5.3")
     testImplementation("ch.qos.logback:logback-classic:1.5.3")
