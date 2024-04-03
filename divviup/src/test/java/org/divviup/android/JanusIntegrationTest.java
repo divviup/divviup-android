@@ -46,16 +46,17 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JanusIntegrationTest {
     /** @noinspection SpellCheckingInspection */
     private static final DockerImageName JANUS_INTEROP_AGGREGATOR = DockerImageName.parse(
-            "us-west2-docker.pkg.dev/divviup-artifacts-public/janus/janus_interop_aggregator:0.7.0-prerelease-4@sha256:e85342f168e2cb202bd1eeb7941bd81facb333fb4f114547508e6f9ff82e3da2"
+            "us-west2-docker.pkg.dev/divviup-artifacts-public/janus/janus_interop_aggregator:0.7.2@sha256:5abe7a37896d51121235a47181a271b64aa3975d0d849278567606217cda38a1"
     );
     /** @noinspection SpellCheckingInspection */
     private static final DockerImageName JANUS_INTEROP_COLLECTOR = DockerImageName.parse(
-            "us-west2-docker.pkg.dev/divviup-artifacts-public/janus/janus_interop_collector:0.7.0-prerelease-4@sha256:617df823da7efe5566eb53e4cbdbe983b027b2369ad430b4fa7de6e972353488"
+            "us-west2-docker.pkg.dev/divviup-artifacts-public/janus/janus_interop_collector:0.7.2@sha256:3004724d6f2f3c40763022a27202ff88e0a08fcde0176d6b8343bb9948231ce5"
     );
     private static final int BASE64_FLAGS = Base64.NO_PADDING | Base64.NO_WRAP | Base64.URL_SAFE;
     private static final int TIME_PRECISION_SECONDS = 3600;
@@ -78,19 +79,23 @@ public class JanusIntegrationTest {
     @Before
     public void setUp() {
         Network network = Network.newNetwork();
+        String rustLog = Optional.ofNullable(System.getenv("RUST_LOG")).orElse("info");
         leader = new GenericContainer<>(JANUS_INTEROP_AGGREGATOR)
                 .withNetwork(network)
                 .withNetworkAliases(LEADER_ALIAS)
                 .withExposedPorts(8080)
+                .withEnv("RUST_LOG", rustLog)
                 .waitingFor(Wait.forHttp("/internal/test/ready").withMethod("POST"));
         helper = new GenericContainer<>(JANUS_INTEROP_AGGREGATOR)
                 .withNetwork(network)
                 .withNetworkAliases(HELPER_ALIAS)
                 .withExposedPorts(8080)
+                .withEnv("RUST_LOG", rustLog)
                 .waitingFor(Wait.forHttp("/internal/test/ready").withMethod("POST"));
         collector = new GenericContainer<>(JANUS_INTEROP_COLLECTOR)
                 .withNetwork(network)
                 .withExposedPorts(8080)
+                .withEnv("RUST_LOG", rustLog)
                 .waitingFor(Wait.forHttp("/internal/test/ready").withMethod("POST"));
         Startables.deepStart(leader, helper, collector).join();
     }
@@ -110,6 +115,7 @@ public class JanusIntegrationTest {
         ObjectNode vdaf = JsonNodeFactory.instance.objectNode();
         vdaf.set("type", JsonNodeFactory.instance.textNode("Prio3Count"));
         runIntegrationTest(
+                "testPrio3Count",
                 (leaderUri, helperUri, taskId) -> Client.createPrio3Count(mockContext, leaderUri, helperUri, taskId, TIME_PRECISION_SECONDS),
                 vdaf,
                 new Boolean[] { true, true, true, true, false, false, false, false, false, false },
@@ -123,6 +129,7 @@ public class JanusIntegrationTest {
         vdaf.set("type", JsonNodeFactory.instance.textNode("Prio3Sum"));
         vdaf.set("bits", JsonNodeFactory.instance.textNode("16"));
         runIntegrationTest(
+                "testPrio3Sum",
                 (leaderUri, helperUri, taskId) -> Client.createPrio3Sum(mockContext, leaderUri, helperUri, taskId, TIME_PRECISION_SECONDS, 16),
                 vdaf,
                 new Long[] { 31865L, 42987L, 30615L, 504L, 30113L },
@@ -142,6 +149,7 @@ public class JanusIntegrationTest {
         expectedResult.add("449");
         expectedResult.add("711");
         runIntegrationTest(
+                "testPrio3SumVec",
                 (leaderUri, helperUri, taskId) -> Client.createPrio3SumVec(mockContext, leaderUri, helperUri, taskId, TIME_PRECISION_SECONDS, 3, 8, 4),
                 vdaf,
                 new long[][] {
@@ -167,6 +175,7 @@ public class JanusIntegrationTest {
         expectedResult.add("2");
         expectedResult.add("4");
         runIntegrationTest(
+                "testPrio3Histogram",
                 (leaderUri, helperUri, taskId) -> Client.createPrio3Histogram(mockContext, leaderUri, helperUri, taskId, TIME_PRECISION_SECONDS, 4, 2),
                 vdaf,
                 new Long[] { 2L, 3L, 3L, 3L, 1L, 0L, 3L, 2L },
@@ -175,6 +184,7 @@ public class JanusIntegrationTest {
     }
 
     private <M> void runIntegrationTest(
+            String testName,
             ClientConstructor<M> clientConstructor,
             JsonNode vdaf,
             M[] measurements,
@@ -275,9 +285,9 @@ public class JanusIntegrationTest {
                 }
             }
         } finally {
-            propagateLogs(leader, "leader");
-            propagateLogs(helper, "helper");
-            propagateLogs(collector, "collector");
+            propagateLogs(leader, testName + "/leader");
+            propagateLogs(helper, testName + "/helper");
+            propagateLogs(collector, testName + "/collector");
         }
 
         assertNotNull(result);
