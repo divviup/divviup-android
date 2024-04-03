@@ -46,6 +46,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JanusIntegrationTest {
@@ -60,7 +61,6 @@ public class JanusIntegrationTest {
     private static final int BASE64_FLAGS = Base64.NO_PADDING | Base64.NO_WRAP | Base64.URL_SAFE;
     private static final int TIME_PRECISION_SECONDS = 3600;
     private static final String LEADER_ALIAS = "leader", HELPER_ALIAS = "helper";
-    private static final String RUST_LOG = "debug";
 
     private GenericContainer<?> leader, helper, collector;
 
@@ -79,22 +79,23 @@ public class JanusIntegrationTest {
     @Before
     public void setUp() {
         Network network = Network.newNetwork();
+        String rustLog = Optional.ofNullable(System.getenv("RUST_LOG")).orElse("info");
         leader = new GenericContainer<>(JANUS_INTEROP_AGGREGATOR)
                 .withNetwork(network)
                 .withNetworkAliases(LEADER_ALIAS)
                 .withExposedPorts(8080)
-                .withEnv("RUST_LOG", RUST_LOG)
+                .withEnv("RUST_LOG", rustLog)
                 .waitingFor(Wait.forHttp("/internal/test/ready").withMethod("POST"));
         helper = new GenericContainer<>(JANUS_INTEROP_AGGREGATOR)
                 .withNetwork(network)
                 .withNetworkAliases(HELPER_ALIAS)
                 .withExposedPorts(8080)
-                .withEnv("RUST_LOG", RUST_LOG)
+                .withEnv("RUST_LOG", rustLog)
                 .waitingFor(Wait.forHttp("/internal/test/ready").withMethod("POST"));
         collector = new GenericContainer<>(JANUS_INTEROP_COLLECTOR)
                 .withNetwork(network)
                 .withExposedPorts(8080)
-                .withEnv("RUST_LOG", RUST_LOG)
+                .withEnv("RUST_LOG", rustLog)
                 .waitingFor(Wait.forHttp("/internal/test/ready").withMethod("POST"));
         Startables.deepStart(leader, helper, collector).join();
     }
