@@ -983,9 +983,9 @@ checksum = "49f1f14873335454500d59611f1cf4a4b0f786f9ac11f4312a78e4cf2566695b"
 
 [[package]]
 name = "janus_core"
-version = "0.6.22"
+version = "0.6.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9dcba3db91b7a74c89e63f601dfede81e156d8bd571fc3ca5d4e97da61f1be01"
+checksum = "468a152310bea7933d7f8ca372f49fa3d41005ddaa03b5e9e92dbf88d52224cd"
 dependencies = [
  "anyhow",
  "backoff",
@@ -1015,9 +1015,9 @@ dependencies = [
 
 [[package]]
 name = "janus_messages"
-version = "0.6.22"
+version = "0.6.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b2ae6826f4c6890ae05bf41f9244e1217778262bd1ffa6cf41b7c51191baf3a5"
+checksum = "6a81faf94d294329cedae5d5932b80b0f8e593625554a0014a36bd9194cd95b0"
 dependencies = [
  "anyhow",
  "base64",
@@ -1978,21 +1978,20 @@ dependencies = [
 
 [[package]]
 name = "trillium"
-version = "0.2.17"
+version = "0.2.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "94dc381af2f03ae743d30c8997a9264003674d43a986697ff7f502adac2f44b2"
+checksum = "01c7180eac36666f14504c5a8606d027154a8e3a4704bd0acc69a13f56c202b6"
 dependencies = [
  "async-trait",
- "futures-lite",
  "log",
  "trillium-http",
 ]
 
 [[package]]
 name = "trillium-http"
-version = "0.3.15"
+version = "0.3.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "08cec7fc9b410d4d27a252e2925e656ddb27ee4cd80f86bfb3c8a0e39a9791f6"
+checksum = "a18d82a9418c6fc1a872bc163fffd49320229edf783cbbb1aa62ba49f517cfad"
 dependencies = [
  "encoding_rs",
  "futures-lite",
@@ -2012,9 +2011,9 @@ dependencies = [
 
 [[package]]
 name = "trillium-macros"
-version = "0.0.5"
+version = "0.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "916054381183f0cfed7604bf7de2044a760624a50d26eef5492468fb73083bbb"
+checksum = "916e37646d33632b88ca02d4b8c4e2e6376f2a89d9888de71b7d82c150ed1f6c"
 dependencies = [
  "proc-macro2",
  "quote",
