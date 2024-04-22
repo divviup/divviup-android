@@ -259,9 +259,9 @@ dependencies = [
 
 [[package]]
 name = "chrono"
-version = "0.4.36"
+version = "0.4.38"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3313f40d6fa9e783bbb01e814800bde9618da2207c72e9782f35e8dc7c77dabc"
+checksum = "a21f936df1771bf62b77f047b726c4625ff2e8aa607c01ec06e5a05bd8463401"
 dependencies = [
  "android-tzdata",
  "iana-time-zone",
@@ -983,9 +983,9 @@ checksum = "49f1f14873335454500d59611f1cf4a4b0f786f9ac11f4312a78e4cf2566695b"
 
 [[package]]
 name = "janus_core"
-version = "0.6.24"
+version = "0.6.25"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "468a152310bea7933d7f8ca372f49fa3d41005ddaa03b5e9e92dbf88d52224cd"
+checksum = "5231bc02091839803ed9b3e68273b13ea4e778e003d9f73508f677153cb16c6a"
 dependencies = [
  "anyhow",
  "backoff",
@@ -1015,9 +1015,9 @@ dependencies = [
 
 [[package]]
 name = "janus_messages"
-version = "0.6.24"
+version = "0.6.25"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6a81faf94d294329cedae5d5932b80b0f8e593625554a0014a36bd9194cd95b0"
+checksum = "79523800e81e8dc6ef89282cecdd0f0c344018906db56213394cd9f0660c136d"
 dependencies = [
  "anyhow",
  "base64",
