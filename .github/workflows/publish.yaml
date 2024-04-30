@@ -21,7 +21,9 @@ jobs:
         java-version: "17"
         check-latest: false
     - name: Install NDK
-      run: sudo bash -c "echo y | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --install 'ndk;26.3.11579264'"
+      run: |
+        NDK_VERSION=$(awk -F= '/ndkVersion/ { print $2 }' gradle.properties)
+        sudo bash -c "echo y | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --install 'ndk;${NDK_VERSION}'"
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3.3.0
     - name: Setup Rust
