@@ -24,6 +24,8 @@ jobs:
         distribution: temurin
         java-version: "17"
         check-latest: false
+    - name: Install NDK
+      run: sudo bash -c "echo y | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --install 'ndk;26.3.11579264'"
     - name: Validate Gradle Wrapper
       uses: gradle/actions/wrapper-validation@v3
     - name: Setup Gradle
