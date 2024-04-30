@@ -24,6 +24,10 @@ jobs:
         distribution: temurin
         java-version: "17"
         check-latest: false
+    - name: Install NDK
+      run: |
+        NDK_VERSION=$(awk -F= '/ndkVersion/ { print $2 }' gradle.properties)
+        sudo bash -c "echo y | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --install 'ndk;${NDK_VERSION}'"
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3.3.0
       with:
