@@ -9,7 +9,7 @@ android {
     namespace = "org.divviup.android"
     compileSdk = 34
 
-    ndkVersion = "26.3.11579264"
+    ndkVersion = findProperty("ndkVersion") as String
 
     buildFeatures {
         buildConfig = true
