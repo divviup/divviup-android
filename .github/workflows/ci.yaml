@@ -63,3 +63,4 @@ jobs:
       uses: actions/dependency-review-action@v4
       with:
         config-file: './.github/dependency-review-config.yml'
+        allow-ghsas: GHSA-4h8f-2wvx-gg5w # This is for Bouncy Castle 1.77. We have worked around this by depending on 1.78.
