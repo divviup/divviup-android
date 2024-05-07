@@ -5,6 +5,14 @@ plugins {
     id("org.mozilla.rust-android-gradle.rust-android") version "0.9.4" apply false
 }
 
+buildscript {
+    dependencies {
+        // Override a transitive dependency from AGP on version 1.77 of the BouncyCastle crypto
+        // provider to address CVE-2024-34447.
+        classpath("org.bouncycastle:bcprov-jdk18on:1.78")
+    }
+}
+
 val osName: String? = System.getProperty("os.name")
 val osArch: String? = System.getProperty("os.arch")
 when {
