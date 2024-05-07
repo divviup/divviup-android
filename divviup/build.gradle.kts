@@ -78,12 +78,12 @@ cargo {
 }
 
 tasks.matching { it.name.matches(Regex("merge.*JniLibFolders")) }.configureEach {
-    inputs.dir(File(buildDir, "rustJniLibs/android"))
+    inputs.dir(layout.buildDirectory.dir("rustJniLibs/android"))
     dependsOn(tasks.named("cargoBuild"))
 }
 
 tasks.withType<Test>().matching { it.name.matches(Regex("test.*UnitTest"))}.configureEach {
-    systemProperty("java.library.path", "${buildDir}/rustJniLibs/desktop/${hostRustTarget}")
+    systemProperty("java.library.path", layout.buildDirectory.dir("rustJniLibs/desktop/${hostRustTarget}").get().toString())
     val capitalizedHostRustTarget = hostRustTarget.replaceFirstChar { it.uppercase() }
     dependsOn(tasks.named("cargoBuild${capitalizedHostRustTarget}"))
 }
