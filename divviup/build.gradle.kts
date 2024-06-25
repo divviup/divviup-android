@@ -61,8 +61,8 @@ dependencies {
     testImplementation("commons-io:commons-io:2.16.1")
     testImplementation("org.mockito:mockito-core:5.12.0")
     androidTestImplementation(project(":divviup:commontest"))
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("androidx.test.ext:junit:1.2.0")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.0")
     androidTestImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
 }
 
