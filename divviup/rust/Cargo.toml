@@ -11,6 +11,6 @@ crate-type = ["cdylib"]
 janus_core = "0.7.26"
 janus_messages = "0.7.2"
 jni = "0.21.1"
-prio = "0.16.5"
+prio = "0.16.6"
 rand = "0.8.5"
 thiserror = "1.0.63"
