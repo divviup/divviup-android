@@ -330,9 +330,9 @@ dependencies = [
 
 [[package]]
 name = "clap"
-version = "4.5.16"
+version = "4.5.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ed6719fffa43d0d87e5fd8caeab59be1554fb028cd30edc88fc4369b17971019"
+checksum = "3e5a21b8495e732f1b3c364c9949b201ca7bae518c502c80256c96ad79eaf6ac"
 dependencies = [
  "clap_builder",
  "clap_derive",
@@ -340,9 +340,9 @@ dependencies = [
 
 [[package]]
 name = "clap_builder"
-version = "4.5.15"
+version = "4.5.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "216aec2b177652e3846684cbfe25c9964d18ec45234f0f5da5157b207ed1aab6"
+checksum = "8cf2dd12af7a047ad9d6da2b6b249759a22a7abc0f474c1dae1777afa4b21a73"
 dependencies = [
  "anstream",
  "anstyle",
@@ -838,19 +838,20 @@ dependencies = [
 
 [[package]]
 name = "hpke"
-version = "0.11.0"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e04a5933a381bb81f00b083fce6b4528e16d735dbeecbb2bdb45e0dbbf3f7e17"
+checksum = "4917627a14198c3603282c5158b815ad5534795451d3c074b53cf3cee0960b11"
 dependencies = [
  "aead",
  "aes-gcm",
- "byteorder",
  "chacha20poly1305",
  "digest",
  "generic-array",
  "hkdf",
  "hmac",
  "p256",
+ "p384",
+ "p521",
  "rand_core",
  "sha2",
  "subtle",
@@ -860,9 +861,9 @@ dependencies = [
 
 [[package]]
 name = "hpke-dispatch"
-version = "0.6.0"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5b76f2793e425663fbe5e56da951cf4649d4b3d545d9667ea7f9edc53aa08cba"
+checksum = "fab97941666d81e06e29cc426612b03adfa5a6717284a7081ad96cf109c4cfc1"
 dependencies = [
  "cfg-if",
  "getrandom",
@@ -1063,9 +1064,9 @@ checksum = "49f1f14873335454500d59611f1cf4a4b0f786f9ac11f4312a78e4cf2566695b"
 
 [[package]]
 name = "janus_core"
-version = "0.7.33"
+version = "0.7.34"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "496193d2106d3eb3069e085b7cb6b2e3d25c97d042833147944cfcf649750479"
+checksum = "9b91cbf50d60b678fbb57bea48279a7ac8d6012c7adcb1bb3fe07e693c082e81"
 dependencies = [
  "anyhow",
  "backoff",
@@ -1096,9 +1097,9 @@ dependencies = [
 
 [[package]]
 name = "janus_messages"
-version = "0.7.33"
+version = "0.7.34"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a236b7b481de3079fcc5a39b8bddbde43a4004e508c8f790cc94cbd28add494c"
+checksum = "108728af014d595e134449a58beb35185c97c684e8c13ae8b33e8f247b4e86e0"
 dependencies = [
  "anyhow",
  "base64",
@@ -1308,6 +1309,27 @@ version = "0.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c9863ad85fa8f4460f9c48cb909d38a0d689dba1f6f6988a5e3e0d31071bcd4b"
 dependencies = [
+ "elliptic-curve",
+ "primeorder",
+]
+
+[[package]]
+name = "p384"
+version = "0.13.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "70786f51bcc69f6a4c0360e063a4cac5419ef7c5cd5b3c99ad70f3be5ba79209"
+dependencies = [
+ "elliptic-curve",
+ "primeorder",
+]
+
+[[package]]
+name = "p521"
+version = "0.13.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0fc9e2161f1f215afdfce23677034ae137bbd45016a880c2eb3ba8eb95f085b2"
+dependencies = [
+ "base16ct",
  "elliptic-curve",
  "primeorder",
 ]
@@ -1754,18 +1776,18 @@ checksum = "61697e0a1c7e512e84a621326239844a24d8207b4669b41bc18b32ea5cbf988b"
 
 [[package]]
 name = "serde"
-version = "1.0.209"
+version = "1.0.210"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "99fce0ffe7310761ca6bf9faf5115afbc19688edd00171d81b1bb1b116c63e09"
+checksum = "c8e3592472072e6e22e0a54d5904d9febf8508f65fb8552499a1abc7d1078c3a"
 dependencies = [
  "serde_derive",
 ]
 
 [[package]]
 name = "serde_derive"
-version = "1.0.209"
+version = "1.0.210"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a5831b979fd7b5439637af1752d535ff49f4860c0f341d1baeb6faf0f4242170"
+checksum = "243902eda00fad750862fc144cea25caca5e20d615af0a81bee94ca738f1df1f"
 dependencies = [
  "proc-macro2",
  "quote",
