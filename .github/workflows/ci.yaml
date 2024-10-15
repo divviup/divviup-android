@@ -26,6 +26,7 @@ jobs:
         check-latest: false
     - name: Install NDK
       run: |
+        mkdir -p "$HOME/.config/.android"
         NDK_VERSION=$(awk -F= '/ndkVersion/ { print $2 }' gradle.properties)
         sudo bash -c "echo y | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --install 'ndk;${NDK_VERSION}'"
     - name: Validate Gradle Wrapper
