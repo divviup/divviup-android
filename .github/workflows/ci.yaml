@@ -51,9 +51,10 @@ jobs:
     - name: Rust lint
       working-directory: divviup/rust
       run: cargo clippy
-    - run: id
+    - run: sudo chown -R runner:docker "$HOME/.config/.android"
     - run: ls -al "$HOME/.config"
     - run: ls -al "$HOME/.config/.android"
+    - run: ls -al "$HOME/.config/.android/cache"
     - name: Build and test
       run: ./gradlew build generateReleaseJavadoc
 
