@@ -1225,9 +1225,9 @@ checksum = "49f1f14873335454500d59611f1cf4a4b0f786f9ac11f4312a78e4cf2566695b"
 
 [[package]]
 name = "janus_core"
-version = "0.7.45"
+version = "0.7.46"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "93cb31ff93ea3659e8e364423050968ae80e52880b4d1a250a353ff56423bcda"
+checksum = "3105b311fcec53ae6c9fb8519dc3ff56f9f326e94e686f92ad625dcb3cfea30a"
 dependencies = [
  "anyhow",
  "backoff",
@@ -1258,9 +1258,9 @@ dependencies = [
 
 [[package]]
 name = "janus_messages"
-version = "0.7.45"
+version = "0.7.46"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5c3da0f4fc40b7eb99624d75dd381e9e3a20791fbd35285c3f0caa17c6e2dc9e"
+checksum = "013ba3aa7fbb9b7f9d7ce01a14a36cee751780a8e6e2cc5d002f3a16f993cbb9"
 dependencies = [
  "anyhow",
  "base64",
@@ -1943,18 +1943,18 @@ checksum = "61697e0a1c7e512e84a621326239844a24d8207b4669b41bc18b32ea5cbf988b"
 
 [[package]]
 name = "serde"
-version = "1.0.215"
+version = "1.0.217"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6513c1ad0b11a9376da888e3e0baa0077f1aed55c17f50e7b2397136129fb88f"
+checksum = "02fc4265df13d6fa1d00ecff087228cc0a2b5f3c0e87e258d8b94a156e984c70"
 dependencies = [
  "serde_derive",
 ]
 
 [[package]]
 name = "serde_derive"
-version = "1.0.215"
+version = "1.0.217"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ad1e866f866923f252f05c889987993144fb74e722403468a4ebd70c3cd756c0"
+checksum = "5a9bf7cf98d04a2b28aead066b7496853d4779c9cc183c440dbac457641e19a0"
 dependencies = [
  "proc-macro2",
  "quote",
