@@ -11,7 +11,7 @@ buildscript {
         // provider to address CVE-2024-34447.
         classpath("org.bouncycastle:bcpkix-jdk18on:1.80")
         classpath("org.bouncycastle:bcprov-jdk18on:1.80")
-        classpath("org.bouncycastle:bcutil-jdk18on:1.79")
+        classpath("org.bouncycastle:bcutil-jdk18on:1.80")
     }
 }
 
