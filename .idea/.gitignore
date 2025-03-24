@@ -1,7 +1,10 @@
 # Default ignored files
 /shelf/
 /workspace.xml
+
+# Various per-user settings
 /androidTestResultsUserPreferences.xml
 /.name
 /deploymentTargetDropDown.xml
 /deploymentTargetSelector.xml
+/runConfigurations.xml
