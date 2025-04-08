@@ -408,9 +408,9 @@ dependencies = [
 
 [[package]]
 name = "clap"
-version = "4.5.32"
+version = "4.5.35"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6088f3ae8c3608d19260cd7445411865a485688711b78b5be70d78cd96136f83"
+checksum = "d8aa86934b44c19c50f87cc2790e19f54f7a67aedb64101c2e1a2e5ecfb73944"
 dependencies = [
  "clap_builder",
  "clap_derive",
@@ -418,9 +418,9 @@ dependencies = [
 
 [[package]]
 name = "clap_builder"
-version = "4.5.32"
+version = "4.5.35"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "22a7ef7f676155edfb82daa97f99441f3ebf4a58d5e32f295a56259f1b6facc8"
+checksum = "2414dbb2dd0695280da6ea9261e327479e9d37b0630f6b53ba2a11c60c679fd9"
 dependencies = [
  "anstream",
  "anstyle",
@@ -1364,9 +1364,9 @@ checksum = "49f1f14873335454500d59611f1cf4a4b0f786f9ac11f4312a78e4cf2566695b"
 
 [[package]]
 name = "janus_core"
-version = "0.7.57"
+version = "0.7.59"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "41d303ad0f0b18ab4900a944b32260d11d73d82c2280bfd754045294ad9a7460"
+checksum = "3672bf17946422d78c549751d0a483ae23dd09fc8fb20f8e14788bfe07145f1b"
 dependencies = [
  "anyhow",
  "aws-lc-rs",
@@ -1397,9 +1397,9 @@ dependencies = [
 
 [[package]]
 name = "janus_messages"
-version = "0.7.57"
+version = "0.7.59"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "870c7968e5243ef166d7d01f1bf02f81d4e0061fffc19259ffabb4a959d921df"
+checksum = "99dfe904c3f1b5601ccb4a98cd8f2ca05e79dc7e68895c7e25723829c4a626a4"
 dependencies = [
  "anyhow",
  "base64",
