@@ -1364,9 +1364,9 @@ checksum = "49f1f14873335454500d59611f1cf4a4b0f786f9ac11f4312a78e4cf2566695b"
 
 [[package]]
 name = "janus_core"
-version = "0.7.61"
+version = "0.7.62"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "78184f9a317e04fa457b5e4d7dfea4cf69dc5edf28702c9b2e5ddf63441f067d"
+checksum = "73c6bbff33795176b8dd307b7ee52855ed585a1a1e998f45a72ae0f9fef75009"
 dependencies = [
  "anyhow",
  "aws-lc-rs",
@@ -1397,9 +1397,9 @@ dependencies = [
 
 [[package]]
 name = "janus_messages"
-version = "0.7.61"
+version = "0.7.62"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a7271af46620421475a97860b5a99b2620e3b3ee8c3144038b1a907679674e7d"
+checksum = "95e0fed3e326e2855a2c260e5aa34f7bea0e537e0eea073598c2cea91d7c4e1a"
 dependencies = [
  "anyhow",
  "base64",
