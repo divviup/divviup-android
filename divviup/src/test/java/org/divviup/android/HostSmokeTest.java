@@ -81,19 +81,19 @@ public class HostSmokeTest {
 
     private static void basicUploadChecks(MockWebServer server) throws InterruptedException {
         RecordedRequest r1 = server.takeRequest();
-        assertEquals(r1.getMethod(), "GET");
-        assertEquals(r1.getUrl().encodedPath(), "/hpke_config");
-        assertEquals(r1.getUrl().encodedQuery(), "task_id=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        assertEquals("GET", r1.getMethod());
+        assertEquals("/hpke_config", r1.getUrl().encodedPath());
+        assertEquals("task_id=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", r1.getUrl().encodedQuery());
 
         RecordedRequest r2 = server.takeRequest();
-        assertEquals(r2.getMethod(), "GET");
-        assertEquals(r2.getUrl().encodedPath(), "/hpke_config");
-        assertEquals(r2.getUrl().encodedQuery(), "task_id=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        assertEquals("GET", r2.getMethod());
+        assertEquals("/hpke_config", r2.getUrl().encodedPath());
+        assertEquals("task_id=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", r2.getUrl().encodedQuery());
 
         RecordedRequest r3 = server.takeRequest();
-        assertEquals(r3.getMethod(), "PUT");
-        assertEquals(r3.getUrl().encodedPath(), "/tasks/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/reports");
-        assertEquals(r3.getHeaders().get("Content-Type"), "application/dap-report");
+        assertEquals("PUT", r3.getMethod());
+        assertEquals("/tasks/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/reports", r3.getUrl().encodedPath());
+        assertEquals("application/dap-report", r3.getHeaders().get("Content-Type"));
         assertTrue(r3.getBody().size() > 0);
     }
 }
