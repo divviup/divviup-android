@@ -50,10 +50,10 @@ android {
 }
 
 dependencies {
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:okhttp:5.1.0")
     testImplementation(project(":divviup:commontest"))
     testImplementation("junit:junit:4.13.2")
-    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
+    testImplementation("com.squareup.okhttp3:mockwebserver:5.1.0")
     testImplementation("org.testcontainers:testcontainers:1.21.3")
     testImplementation("com.fasterxml.jackson.core:jackson-databind:2.19.1")
     testImplementation("ch.qos.logback:logback-core:1.5.18")
@@ -63,7 +63,7 @@ dependencies {
     androidTestImplementation(project(":divviup:commontest"))
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
-    androidTestImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
+    androidTestImplementation("com.squareup.okhttp3:mockwebserver:5.1.0")
 }
 
 val rustTargets: List<String> by rootProject.extra
