@@ -17,8 +17,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.io.IOException;
 import java.net.URI;
 
-import okhttp3.mockwebserver.MockWebServer;
-import okhttp3.mockwebserver.RecordedRequest;
+import mockwebserver3.MockWebServer;
+import mockwebserver3.RecordedRequest;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HostSmokeTest {
@@ -82,16 +82,18 @@ public class HostSmokeTest {
     private static void basicUploadChecks(MockWebServer server) throws InterruptedException {
         RecordedRequest r1 = server.takeRequest();
         assertEquals(r1.getMethod(), "GET");
-        assertEquals(r1.getPath(), "/hpke_config?task_id=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        assertEquals(r1.getUrl().encodedPath(), "/hpke_config");
+        assertEquals(r1.getUrl().encodedQuery(), "task_id=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 
         RecordedRequest r2 = server.takeRequest();
         assertEquals(r2.getMethod(), "GET");
-        assertEquals(r2.getPath(), "/hpke_config?task_id=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        assertEquals(r2.getUrl().encodedPath(), "/hpke_config");
+        assertEquals(r2.getUrl().encodedQuery(), "task_id=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 
         RecordedRequest r3 = server.takeRequest();
         assertEquals(r3.getMethod(), "PUT");
-        assertEquals(r3.getPath(), "/tasks/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/reports");
-        assertEquals(r3.getHeader("Content-Type"), "application/dap-report");
+        assertEquals(r3.getUrl().encodedPath(), "/tasks/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/reports");
+        assertEquals(r3.getHeaders().get("Content-Type"), "application/dap-report");
         assertTrue(r3.getBody().size() > 0);
     }
 }
