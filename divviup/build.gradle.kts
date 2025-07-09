@@ -49,8 +49,18 @@ android {
     }
 }
 
+val documentation: Configuration by configurations.creating
+
 dependencies {
     implementation("com.squareup.okhttp3:okhttp:5.1.0")
+    documentation("com.squareup.okhttp3:okhttp:5.1.0") {
+        attributes {
+            attribute(
+                TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
+                objects.named(TargetJvmEnvironment::class, TargetJvmEnvironment.STANDARD_JVM)
+            )
+        }
+    }
     testImplementation(project(":divviup:commontest"))
     testImplementation("junit:junit:4.13.2")
     testImplementation("com.squareup.okhttp3:mockwebserver3:5.1.0")
@@ -97,6 +107,7 @@ afterEvaluate {
             source = android.sourceSets["main"].java.getSourceFiles()
             classpath += files(android.bootClasspath)
             classpath += files(variant.compileConfiguration)
+            classpath += files(documentation)
         }
     }
 }
