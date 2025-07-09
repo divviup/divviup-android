@@ -4,8 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
+import mockwebserver3.MockResponse;
+import mockwebserver3.MockWebServer;
+import okhttp3.Headers;
 import okio.Buffer;
 
 public class MockAggregator {
@@ -23,16 +24,20 @@ public class MockAggregator {
         Buffer hpkeConfigListBuffer = loadHpkeConfigList();
         MockWebServer server = new MockWebServer();
         server.enqueue(
-                new MockResponse()
-                        .setHeader("Content-Type", "application/dap-hpke-config-list")
-                        .setBody(hpkeConfigListBuffer)
+                new MockResponse.Builder()
+                        .code(200)
+                        .addHeader("Content-Type", "application/dap-hpke-config-list")
+                        .body(hpkeConfigListBuffer)
+                        .build()
         );
         server.enqueue(
-                new MockResponse()
-                        .setHeader("Content-Type", "application/dap-hpke-config-list")
-                        .setBody(hpkeConfigListBuffer)
+                new MockResponse.Builder()
+                        .code(200)
+                        .addHeader("Content-Type", "application/dap-hpke-config-list")
+                        .body(hpkeConfigListBuffer)
+                        .build()
         );
-        server.enqueue(new MockResponse());
+        server.enqueue(new MockResponse(200, Headers.EMPTY, ""));
         server.start();
         return server;
     }

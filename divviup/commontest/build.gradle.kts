@@ -29,5 +29,6 @@ android {
 }
 
 dependencies {
-    implementation("com.squareup.okhttp3:mockwebserver:4.12.0")
+    implementation("com.squareup.okhttp3:mockwebserver3:5.1.0")
+    implementation("com.squareup.okhttp3:mockwebserver3-junit4:5.1.0")
 }
