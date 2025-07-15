@@ -1342,6 +1342,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "io-uring"
+version = "0.7.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b86e202f00093dcba4275d4636b93ef9dd75d025ae560d2521b45ea28ab49013"
+dependencies = [
+ "bitflags 2.9.0",
+ "cfg-if",
+ "libc",
+]
+
+[[package]]
 name = "ipnet"
 version = "2.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1364,9 +1375,9 @@ checksum = "49f1f14873335454500d59611f1cf4a4b0f786f9ac11f4312a78e4cf2566695b"
 
 [[package]]
 name = "janus_core"
-version = "0.7.73"
+version = "0.7.74"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "338ace38d5430cb6d10493e4918f0627e51e1e77eca4fd61abbda0f79a13ead7"
+checksum = "454ae944a6a9b871817c3c634407467e0bd48f7d9e09adf8e08ed12191d9532f"
 dependencies = [
  "anyhow",
  "aws-lc-rs",
@@ -1397,9 +1408,9 @@ dependencies = [
 
 [[package]]
 name = "janus_messages"
-version = "0.7.73"
+version = "0.7.74"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cc332d20801465e61caf6e5c08bc020384d7385a2ae54227f91ef3ae3a55aacb"
+checksum = "68f1b1e6cf6802217360b1a9f873003ff4fc09c638e764f6c568d881194c7a2f"
 dependencies = [
  "anyhow",
  "base64",
@@ -2438,17 +2449,19 @@ checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 
 [[package]]
 name = "tokio"
-version = "1.45.0"
+version = "1.46.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2513ca694ef9ede0fb23fe71a4ee4107cb102b9dc1930f6d0fd77aae068ae165"
+checksum = "0cc3a2344dafbe23a245241fe8b09735b521110d30fcefbbd5feb1797ca35d17"
 dependencies = [
  "backtrace",
  "bytes",
+ "io-uring",
  "libc",
  "mio",
  "parking_lot",
  "pin-project-lite",
  "signal-hook-registry",
+ "slab",
  "socket2",
  "tokio-macros",
  "tracing",
