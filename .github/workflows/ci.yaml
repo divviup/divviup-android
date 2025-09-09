@@ -16,6 +16,9 @@ jobs:
       CARGO_TERM_COLOR: always
       RUSTFLAGS: "-D warnings"
     steps:
+    - name: Get OS version
+      id: os-version
+      run: echo "release=$(lsb_release --release --short)" >> $GITHUB_OUTPUT
     - name: Checkout
       uses: actions/checkout@v5
     - name: Setup Java
@@ -50,7 +53,7 @@ jobs:
     - name: Rust caching
       uses: Swatinem/rust-cache@v2
       with:
-        key: ${{ steps.rust-toolchain.outputs.cachekey }}
+        key: "${{ steps.os-version.outputs.release }}-${{ steps.rust-toolchain.outputs.cachekey }}"
         workspaces: divviup/rust
     - name: Rust format
       working-directory: divviup/rust
