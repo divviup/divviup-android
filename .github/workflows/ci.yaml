@@ -33,9 +33,9 @@ jobs:
         NDK_VERSION=$(awk -F= '/ndkVersion/ { print $2 }' gradle.properties)
         sudo bash -c "echo y | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --install 'ndk;${NDK_VERSION}'"
     - name: Validate Gradle Wrapper
-      uses: gradle/actions/wrapper-validation@v4
+      uses: gradle/actions/wrapper-validation@v5
     - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v4
+      uses: gradle/actions/setup-gradle@v5
       with:
         dependency-graph: generate-and-submit
     - name: Setup Rust
