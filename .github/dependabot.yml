@@ -23,6 +23,9 @@ updates:
       jetpack:
         patterns:
           - androidx.*
+      okhttp:
+        patterns:
+          - com.squareup.okhttp3:*
     target-branch: main
 
   - package-ecosystem: cargo
