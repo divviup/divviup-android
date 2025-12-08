@@ -8,7 +8,7 @@ publish = false
 crate-type = ["cdylib"]
 
 [dependencies]
-janus_core = "0.7.99"
+janus_core = "0.7.100"
 janus_messages = "0.7.2"
 jni = "0.21.1"
 prio = "0.16.8"
