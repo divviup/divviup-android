@@ -45,7 +45,7 @@ jobs:
         targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
         components: clippy, rustfmt
     - name: Install cargo-binstall
-      uses: cargo-bins/cargo-binstall@v1.16.3
+      uses: cargo-bins/cargo-binstall@v1.16.4
     - name: Install bindgen-cli
       run: cargo binstall bindgen-cli -y
       env:
