@@ -39,8 +39,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Upload artifacts
       env:
-        ORG_GRADLE_PROJECT_ossrhUsername: ${{ secrets.OSSRH_USER_TOKEN_USERNAME }}
-        ORG_GRADLE_PROJECT_ossrhPassword: ${{ secrets.OSSRH_USER_TOKEN_PASSWORD }}
+        ORG_GRADLE_PROJECT_portalUsername: ${{ secrets.MAVEN_CENTRAL_PORTAL_TOKEN_USERNAME }}
+        ORG_GRADLE_PROJECT_portalPassword: ${{ secrets.MAVEN_CENTRAL_PORTAL_TOKEN_PASSWORD }}
         ORG_GRADLE_PROJECT_signingKey: ${{ secrets.PGP_SIGNING_KEY }}
         ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.PGP_SIGNING_PASSPHRASE }}
-      run: ./gradlew :divviup:publishReleasePublicationToOSSRHRepository
+      run: ./gradlew :divviup:publishReleasePublicationToCentralPortalRepository
