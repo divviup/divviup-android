@@ -37,11 +37,6 @@ jobs:
       run: cargo binstall bindgen-cli -y
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Rust caching
-      uses: Swatinem/rust-cache@v2
-      with:
-        key: ${{ steps.rust-toolchain.outputs.cachekey }}
-        workspaces: divviup/rust
     - name: Upload artifacts
       env:
         ORG_GRADLE_PROJECT_ossrhUsername: ${{ secrets.OSSRH_USER_TOKEN_USERNAME }}

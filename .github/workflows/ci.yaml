@@ -28,9 +28,11 @@ jobs:
         java-version: "17"
         check-latest: false
     - name: Install NDK
+      id: ndk
       run: |
         mkdir -p "$HOME/.config/.android"
         NDK_VERSION=$(awk -F= '/ndkVersion/ { print $2 }' gradle.properties)
+        echo "ndk_version=$NDK_VERSION" >> $GITHUB_OUTPUT
         sudo bash -c "echo y | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --install 'ndk;${NDK_VERSION}'"
     - name: Validate Gradle Wrapper
       uses: gradle/actions/wrapper-validation@v5
@@ -53,7 +55,7 @@ jobs:
     - name: Rust caching
       uses: Swatinem/rust-cache@v2
       with:
-        key: "${{ steps.os-version.outputs.release }}-${{ steps.rust-toolchain.outputs.cachekey }}"
+        key: "${{ steps.os-version.outputs.release }}-${{ steps.rust-toolchain.outputs.cachekey }}-${{ steps.ndk.outputs.ndk_version }}"
         workspaces: divviup/rust
     - name: Rust format
       working-directory: divviup/rust
