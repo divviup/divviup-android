@@ -151,7 +151,7 @@ publishing {
             name = "CentralPortal"
 
             val releasesRepoUrl = uri("https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/")
-            val snapshotsRepoUrl = uri("https://central.sonatype.com/repository/maven-snapshots/")
+            val snapshotsRepoUrl = uri("https://central.sonatype.com/repository/maven-snapshots/") // TODO: it seems like this doesn't work
             url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
 
             credentials {
