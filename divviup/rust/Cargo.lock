@@ -524,7 +524,7 @@ dependencies = [
  "janus_messages",
  "jni",
  "prio",
- "rand 0.8.5",
+ "rand 0.9.2",
  "thiserror 2.0.18",
 ]
 
