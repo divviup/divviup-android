@@ -338,7 +338,8 @@ fn prepare_report_generic<'local, 'a, V>(
 where
     V: vdaf::Client<16>,
 {
-    let report_id: ReportId = random();
+    let report_id_bytes: [u8; 16] = random();
+    let report_id = ReportId::try_from(report_id_bytes.as_slice())?;
     let (public_share, input_shares) = vdaf.shard(measurement, report_id.as_ref())?;
     let encoded_leader_input_share = input_shares[0].get_encoded()?;
     let encoded_helper_input_share = input_shares[1].get_encoded()?;
