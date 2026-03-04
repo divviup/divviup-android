@@ -187,7 +187,6 @@ fn prepare_report_prio3count_inner<'local, 'a>(
     env: &'a mut Env<'local>,
 ) -> Result<Vec<u8>, Error> {
     let vdaf = Prio3::new_count(2)?;
-    let measurement = measurement;
     prepare_report_generic(
         task_id_byte_array,
         leader_hpke_config_list_byte_array,
