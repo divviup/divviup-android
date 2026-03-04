@@ -1,6 +1,6 @@
 #![deny(unsafe_op_in_unsafe_fn)]
 
-use std::{ptr, slice};
+use std::slice;
 
 use janus_core::hpke::{self, is_hpke_config_supported, HpkeApplicationInfo, Label};
 use janus_messages::{
@@ -8,9 +8,10 @@ use janus_messages::{
     ReportId, ReportMetadata, Role, TaskId, Time,
 };
 use jni::{
+    errors::ThrowRuntimeExAndDefault,
     objects::{JByteArray, JClass, JLongArray, ReleaseMode},
     sys::{jboolean, jbyteArray, jlong, jobject},
-    JNIEnv,
+    Env, EnvUnowned,
 };
 use prio::{
     codec::{Decode, Encode},
@@ -26,7 +27,7 @@ use rand::random;
 pub extern "system" fn Java_org_divviup_android_Client_00024Prio3CountReportPreparer_prepareReportNative<
     'local,
 >(
-    mut env: JNIEnv<'local>,
+    mut env: EnvUnowned<'local>,
     _this: JClass<'local>,
     task_id_byte_array: JByteArray<'local>,
     leader_hpke_config_list_byte_array: JByteArray<'local>,
@@ -34,7 +35,7 @@ pub extern "system" fn Java_org_divviup_android_Client_00024Prio3CountReportPrep
     timestamp: jlong,
     measurement: jboolean,
 ) -> jbyteArray {
-    jni_try(&mut env, |env: &mut JNIEnv<'_>| {
+    jni_try(&mut env, |env: &mut Env<'_>| {
         let report = prepare_report_prio3count_inner(
             &task_id_byte_array,
             &leader_hpke_config_list_byte_array,
@@ -55,7 +56,7 @@ pub extern "system" fn Java_org_divviup_android_Client_00024Prio3CountReportPrep
 pub extern "system" fn Java_org_divviup_android_Client_00024Prio3SumReportPreparer_prepareReportNative<
     'local,
 >(
-    mut env: JNIEnv<'local>,
+    mut env: EnvUnowned<'local>,
     _this: JClass<'local>,
     task_id_byte_array: JByteArray<'local>,
     leader_hpke_config_list_byte_array: JByteArray<'local>,
@@ -64,7 +65,7 @@ pub extern "system" fn Java_org_divviup_android_Client_00024Prio3SumReportPrepar
     bits: jlong,
     measurement: jlong,
 ) -> jbyteArray {
-    jni_try(&mut env, |env: &mut JNIEnv<'_>| {
+    jni_try(&mut env, |env: &mut Env<'_>| {
         let report = prepare_report_prio3sum_inner(
             &task_id_byte_array,
             &leader_hpke_config_list_byte_array,
@@ -86,7 +87,7 @@ pub extern "system" fn Java_org_divviup_android_Client_00024Prio3SumReportPrepar
 pub extern "system" fn Java_org_divviup_android_Client_00024Prio3SumVecReportPreparer_prepareReportNative<
     'local,
 >(
-    mut env: JNIEnv<'local>,
+    mut env: EnvUnowned<'local>,
     _this: JClass<'local>,
     task_id_byte_array: JByteArray<'local>,
     leader_hpke_config_list_byte_array: JByteArray<'local>,
@@ -97,7 +98,7 @@ pub extern "system" fn Java_org_divviup_android_Client_00024Prio3SumVecReportPre
     chunk_length: jlong,
     measurement: JLongArray<'local>,
 ) -> jbyteArray {
-    jni_try(&mut env, |env: &mut JNIEnv<'_>| {
+    jni_try(&mut env, |env: &mut Env<'_>| {
         let report = prepare_report_prio3sumvec_inner(
             &task_id_byte_array,
             &leader_hpke_config_list_byte_array,
@@ -121,7 +122,7 @@ pub extern "system" fn Java_org_divviup_android_Client_00024Prio3SumVecReportPre
 pub extern "system" fn Java_org_divviup_android_Client_00024Prio3HistogramReportPreparer_prepareReportNative<
     'local,
 >(
-    mut env: JNIEnv<'local>,
+    mut env: EnvUnowned<'local>,
     _this: JClass<'local>,
     task_id_byte_array: JByteArray<'local>,
     leader_hpke_config_list_byte_array: JByteArray<'local>,
@@ -131,7 +132,7 @@ pub extern "system" fn Java_org_divviup_android_Client_00024Prio3HistogramReport
     chunk_length: jlong,
     measurement: jlong,
 ) -> jbyteArray {
-    jni_try(&mut env, |env: &mut JNIEnv<'_>| {
+    jni_try(&mut env, |env: &mut Env<'_>| {
         let report = prepare_report_prio3histogram_inner(
             &task_id_byte_array,
             &leader_hpke_config_list_byte_array,
@@ -154,34 +155,23 @@ enum Error {
     Hpke(#[from] janus_core::hpke::Error),
     #[error("invalid parameter: {0}")]
     InvalidParameter(&'static str),
-    #[error("unexpected value for jboolean")]
-    JBoolean,
     #[error("JNI error: {0}")]
     Jni(#[from] jni::errors::Error),
     #[error("message decoding failed: {0}")]
     Message(#[from] janus_messages::Error),
     #[error("aggregator provided empty HPKE config list")]
     MissingHpkeConfigs,
-    #[error("generated report is too large")]
-    ReportTooLarge,
     #[error("VDAF error: {0}")]
     Vdaf(#[from] prio::vdaf::VdafError),
 }
 
 /// Runs a fallible closure that returns a jobject, and transforms an error result into a thrown
 /// exception, with a message provided from the error.
-fn jni_try<'local, F>(env: &mut JNIEnv<'local>, mut f: F) -> jobject
+fn jni_try<'local, F>(env: &mut EnvUnowned<'local>, f: F) -> jobject
 where
-    F: FnMut(&mut JNIEnv<'local>) -> Result<jobject, Error>,
+    F: FnOnce(&mut Env<'local>) -> Result<jobject, Error>,
 {
-    let result = f(env);
-    match result {
-        Ok(object) => object,
-        Err(error) => {
-            let _ = env.throw(error.to_string());
-            ptr::null_mut()
-        }
-    }
+    env.with_env(f).resolve::<ThrowRuntimeExAndDefault>()
 }
 
 /// Shard a Prio3Count measurement, and construct a DAP report.
@@ -194,14 +184,9 @@ fn prepare_report_prio3count_inner<'local, 'a>(
     helper_hpke_config_list_byte_array: &'a JByteArray<'local>,
     timestamp: jlong,
     measurement: jboolean,
-    env: &'a mut JNIEnv<'local>,
+    env: &'a mut Env<'local>,
 ) -> Result<Vec<u8>, Error> {
     let vdaf = Prio3::new_count(2)?;
-    let measurement = match measurement {
-        0 => false,
-        1 => true,
-        _ => return Err(Error::JBoolean),
-    };
     prepare_report_generic(
         task_id_byte_array,
         leader_hpke_config_list_byte_array,
@@ -224,7 +209,7 @@ fn prepare_report_prio3sum_inner<'local, 'a>(
     timestamp: jlong,
     bits: jlong,
     measurement: jlong,
-    env: &'a mut JNIEnv<'local>,
+    env: &'a mut Env<'local>,
 ) -> Result<Vec<u8>, Error> {
     let bits = bits
         .try_into()
@@ -258,7 +243,7 @@ fn prepare_report_prio3sumvec_inner<'local, 'a>(
     bits: jlong,
     chunk_length: jlong,
     measurement: &'a JLongArray<'local>,
-    env: &'a mut JNIEnv<'local>,
+    env: &'a mut Env<'local>,
 ) -> Result<Vec<u8>, Error> {
     let bits = bits
         .try_into()
@@ -299,7 +284,7 @@ fn prepare_report_prio3histogram_inner<'local, 'a>(
     length: jlong,
     chunk_length: jlong,
     measurement: jlong,
-    env: &'a mut JNIEnv<'local>,
+    env: &'a mut Env<'local>,
 ) -> Result<Vec<u8>, Error> {
     let length = length
         .try_into()
@@ -333,7 +318,7 @@ fn prepare_report_generic<'local, 'a, V>(
     timestamp: jlong,
     vdaf: V,
     measurement: &V::Measurement,
-    env: &'a mut JNIEnv<'local>,
+    env: &'a mut Env<'local>,
 ) -> Result<Vec<u8>, Error>
 where
     V: vdaf::Client<16>,
@@ -365,7 +350,7 @@ fn assemble_report<'local, 'a>(
     task_id_byte_array: &'a JByteArray<'local>,
     leader_hpke_config_list_byte_array: &'a JByteArray<'local>,
     helper_hpke_config_list_byte_array: &'a JByteArray<'local>,
-    env: &mut JNIEnv<'local>,
+    env: &mut Env<'local>,
     timestamp: i64,
     report_id: ReportId,
     encoded_public_share: Vec<u8>,
@@ -427,10 +412,10 @@ fn assemble_report<'local, 'a>(
 /// [`AutoElementsCritical`][jni::objects::AutoElementsCritical] may alias the array.
 unsafe fn parse_task_id<'local, 'a>(
     array: &'a JByteArray<'local>,
-    env: &'a mut JNIEnv<'local>,
+    env: &'a mut Env<'local>,
 ) -> Result<TaskId, Error> {
-    // Safety: All safety requirements of get_array_elements() are imposed on the caller.
-    let elements = unsafe { env.get_array_elements(array, ReleaseMode::NoCopyBack) }?;
+    // Safety: All safety requirements of get_elements() are imposed on the caller.
+    let elements = unsafe { array.get_elements(env, ReleaseMode::NoCopyBack) }?;
     let signed_slice: &[i8] = &elements[..];
     // Safety: The [u8] slice aliases a [i8] slice, and the two have the same memory layout. The
     // backing memory is managed by the JVM. The memory is valid for long enough because it is only
@@ -453,10 +438,10 @@ unsafe fn parse_task_id<'local, 'a>(
 /// [`AutoElementsCritical`][jni::objects::AutoElementsCritical] may alias the array.
 unsafe fn decode_hpke_config_list<'local, 'a>(
     array: &'a JByteArray<'local>,
-    env: &'a mut JNIEnv<'local>,
+    env: &'a mut Env<'local>,
 ) -> Result<HpkeConfigList, Error> {
-    // Safety: All safety requirements of get_array_elements() are imposed on the caller.
-    let elements = unsafe { env.get_array_elements(array, ReleaseMode::NoCopyBack) }?;
+    // Safety: All safety requirements of get_elements() are imposed on the caller.
+    let elements = unsafe { array.get_elements(env, ReleaseMode::NoCopyBack) }?;
     let signed_slice: &[i8] = &elements[..];
     // Safety: The [u8] slice aliases a [i8] slice, and the two have the same memory layout. The
     // backing memory is managed by the JVM. The memory is valid for long enough because it is only
@@ -479,10 +464,10 @@ unsafe fn decode_hpke_config_list<'local, 'a>(
 /// [`AutoElementsCritical`][jni::objects::AutoElementsCritical] may alias the array.
 unsafe fn convert_sumvec_measurement<'local, 'a>(
     array: &'a JLongArray<'local>,
-    env: &'a mut JNIEnv<'local>,
+    env: &'a mut Env<'local>,
 ) -> Result<Vec<u128>, Error> {
-    // Safety: All safety requirements of get_array_elements() are imposed on the caller.
-    let elements = unsafe { env.get_array_elements(array, ReleaseMode::NoCopyBack) }?;
+    // Safety: All safety requirements of get_elements() are imposed on the caller.
+    let elements = unsafe { array.get_elements(env, ReleaseMode::NoCopyBack) }?;
     elements
         .iter()
         .map(|value| u128::try_from(*value))
@@ -493,12 +478,9 @@ unsafe fn convert_sumvec_measurement<'local, 'a>(
 /// Creates a new byte[] array, copies the provided data into it, and returns a raw JNI pointer to
 /// the array. This pointer is intended to be returned from a JNI method.
 ///
-/// This returns an error if the byte slice's length cannot fit in an i32, or if the JVM fails to
-/// create or update the array.
-fn return_new_byte_array(data: &[u8], env: &mut JNIEnv<'_>) -> Result<jbyteArray, Error> {
-    let length = data.len().try_into().map_err(|_| Error::ReportTooLarge)?;
-
-    let byte_array = env.new_byte_array(length)?;
+/// This returns an error if the JVM fails to create or update the array.
+fn return_new_byte_array(data: &[u8], env: &mut Env<'_>) -> Result<jbyteArray, Error> {
+    let byte_array = env.new_byte_array(data.len())?;
 
     // Start a new scope for the AutoElements. We need to drop it before calling into_raw() on the
     // byte array, as it borrows the byte array.
@@ -506,7 +488,7 @@ fn return_new_byte_array(data: &[u8], env: &mut JNIEnv<'_>) -> Result<jbyteArray
         // Safety: There are no races on this array, and it will not be aliased, because it is newly
         // created. The `AutoElements` will release its reference before the array is returned to
         // Java code.
-        let mut elements = unsafe { env.get_array_elements(&byte_array, ReleaseMode::CopyBack) }?;
+        let mut elements = unsafe { byte_array.get_elements(env, ReleaseMode::CopyBack) }?;
         let signed_slice: &mut [i8] = &mut elements[..];
         let len = signed_slice.len();
         // Safety: The [u8] mutable slice points to the same memory as the [i8] slice, and the two
