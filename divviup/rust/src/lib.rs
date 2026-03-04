@@ -2,16 +2,16 @@
 
 use std::slice;
 
-use janus_core::hpke::{self, HpkeApplicationInfo, Label, is_hpke_config_supported};
+use janus_core::hpke::{self, is_hpke_config_supported, HpkeApplicationInfo, Label};
 use janus_messages::{
     HpkeCiphertext, HpkeConfig, HpkeConfigList, InputShareAad, PlaintextInputShare, Report,
     ReportId, ReportMetadata, Role, TaskId, Time,
 };
 use jni::{
-    Env, EnvUnowned,
     errors::ThrowRuntimeExAndDefault,
     objects::{JByteArray, JClass, JLongArray, ReleaseMode},
     sys::{jboolean, jbyteArray, jlong, jobject},
+    Env, EnvUnowned,
 };
 use prio::{
     codec::{Decode, Encode},
