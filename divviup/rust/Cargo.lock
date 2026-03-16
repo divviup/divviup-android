@@ -1238,9 +1238,9 @@ checksum = "49f1f14873335454500d59611f1cf4a4b0f786f9ac11f4312a78e4cf2566695b"
 
 [[package]]
 name = "janus_core"
-version = "0.7.111"
+version = "0.7.112"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "96e5029f03caf571a5aef1025bc51b0c9a781cfc2c6eae519537c883d2ec5a50"
+checksum = "6372dd0225b7c29b7d65ec18180a15412d7734edd808255c25fb823c3ede5a06"
 dependencies = [
  "anyhow",
  "aws-lc-rs",
@@ -1271,9 +1271,9 @@ dependencies = [
 
 [[package]]
 name = "janus_messages"
-version = "0.7.111"
+version = "0.7.112"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fd7352d13356a6b7d15506184d12221d02cea4d20e7c6c8039b70de8dbaa39fe"
+checksum = "684491ff996fd13489d6acdfb783731700410f7f3ce757b914e5dbf406602087"
 dependencies = [
  "anyhow",
  "base64",
@@ -2295,9 +2295,9 @@ checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 
 [[package]]
 name = "tokio"
-version = "1.49.0"
+version = "1.50.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "72a2903cd7736441aac9df9d7688bd0ce48edccaadf181c3b90be801e81d3d86"
+checksum = "27ad5e34374e03cfffefc301becb44e9dc3c17584f414349ebe29ed26661822d"
 dependencies = [
  "bytes",
  "libc",
