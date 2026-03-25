@@ -40,6 +40,7 @@ jobs:
       uses: gradle/actions/setup-gradle@v6
       with:
         dependency-graph: generate-and-submit
+        cache-disabled: true
     - name: Setup Rust
       id: rust-toolchain
       uses: dtolnay/rust-toolchain@stable
