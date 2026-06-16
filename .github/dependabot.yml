@@ -12,6 +12,8 @@ updates:
       - google
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
     groups:
       agp:
         patterns:
@@ -32,6 +34,8 @@ updates:
     directory: divviup/rust
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
     ignore:
       - dependency-name: prio
         update-types:
@@ -49,4 +53,6 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
     target-branch: main
