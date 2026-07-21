@@ -66,7 +66,7 @@ dependencies {
     testImplementation("com.squareup.okhttp3:mockwebserver3:5.3.2")
     testImplementation("com.squareup.okhttp3:mockwebserver3-junit4:5.3.2")
     testImplementation("org.testcontainers:testcontainers:2.0.5")
-    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.22.0")
+    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.22.1")
     testImplementation("ch.qos.logback:logback-core:1.5.37")
     testImplementation("ch.qos.logback:logback-classic:1.5.37")
     testImplementation("commons-io:commons-io:2.22.0")
