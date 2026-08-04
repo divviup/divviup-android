@@ -552,14 +552,14 @@ checksum = "92773504d58c093f6de2459af4af33faa518c13451eb8f2b5698ed3d36e7c813"
 
 [[package]]
 name = "educe"
-version = "0.6.0"
+version = "0.7.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1d7bc049e1bd8cdeb31b68bbd586a9464ecf9f3944af3958a7a9d0f8b9799417"
+checksum = "e451fac8dd8dece16234604bf1efce6e90fddd8ab6ad4d66eec0eca5160959dd"
 dependencies = [
  "enum-ordinalize",
  "proc-macro2",
  "quote",
- "syn 2.0.117",
+ "syn 3.0.3",
 ]
 
 [[package]]
@@ -592,22 +592,22 @@ dependencies = [
 
 [[package]]
 name = "enum-ordinalize"
-version = "4.3.0"
+version = "4.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fea0dcfa4e54eeb516fe454635a95753ddd39acda650ce703031c6973e315dd5"
+checksum = "89dd01549b09589510cf0647475075d12071456586d70f5c75c98ae2a5537677"
 dependencies = [
  "enum-ordinalize-derive",
 ]
 
 [[package]]
 name = "enum-ordinalize-derive"
-version = "4.3.1"
+version = "4.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0d28318a75d4aead5c4db25382e8ef717932d0346600cacae6357eb5941bc5ff"
+checksum = "a65863d15a4ce2888bd2f0f543cc963d3879c3a022c8ee43f6141d479a3ac815"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.117",
+ "syn 3.0.3",
 ]
 
 [[package]]
@@ -1272,9 +1272,9 @@ checksum = "49f1f14873335454500d59611f1cf4a4b0f786f9ac11f4312a78e4cf2566695b"
 
 [[package]]
 name = "janus_core"
-version = "0.7.130"
+version = "0.7.132"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a1bfe55e836b22d45cfd8093ad9834f56379e9c53f61f244bedb73b28c57f70c"
+checksum = "ad2cfcfa1433a2df9dc3fe6823e6a18e471b47db0a1d10179f9a066151fccada"
 dependencies = [
  "anyhow",
  "aws-lc-rs",
@@ -1305,9 +1305,9 @@ dependencies = [
 
 [[package]]
 name = "janus_messages"
-version = "0.7.130"
+version = "0.7.133"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "91ab0d778bc21684a10ae211798924111f0e746da018a7fa3365a4cb477c13b0"
+checksum = "ebcd68ffc7339c34caaed197a957271213a10fa3ec4a812ed390e3683e0c0bfa"
 dependencies = [
  "anyhow",
  "base64",
