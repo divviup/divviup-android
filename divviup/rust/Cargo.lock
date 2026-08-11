@@ -1272,9 +1272,9 @@ checksum = "49f1f14873335454500d59611f1cf4a4b0f786f9ac11f4312a78e4cf2566695b"
 
 [[package]]
 name = "janus_core"
-version = "0.7.132"
+version = "0.7.133"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ad2cfcfa1433a2df9dc3fe6823e6a18e471b47db0a1d10179f9a066151fccada"
+checksum = "1fdb37d36f2044c76573c121ec7ef9454aba6e36c4ec956f4fb153cc208bdd0d"
 dependencies = [
  "anyhow",
  "aws-lc-rs",
