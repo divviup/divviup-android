@@ -202,6 +202,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
 
 [[package]]
+name = "base64"
+version = "0.23.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ac07cdecf99051d9a5238b80f35af32cdeba5b336e55d957b318b50137e18da5"
+
+[[package]]
 name = "bitflags"
 version = "1.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1272,14 +1278,14 @@ checksum = "49f1f14873335454500d59611f1cf4a4b0f786f9ac11f4312a78e4cf2566695b"
 
 [[package]]
 name = "janus_core"
-version = "0.7.133"
+version = "0.7.134"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1fdb37d36f2044c76573c121ec7ef9454aba6e36c4ec956f4fb153cc208bdd0d"
+checksum = "a9902369bdae30333f6fb40e909ad1bd1264d3c420ec786781c9c94bd1bc1cce"
 dependencies = [
  "anyhow",
  "aws-lc-rs",
  "backoff",
- "base64",
+ "base64 0.23.1",
  "bytes",
  "chrono",
  "clap",
@@ -1305,12 +1311,12 @@ dependencies = [
 
 [[package]]
 name = "janus_messages"
-version = "0.7.133"
+version = "0.7.135"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ebcd68ffc7339c34caaed197a957271213a10fa3ec4a812ed390e3683e0c0bfa"
+checksum = "8b7ed263f94c216ceda1cbadbe389a4cbc80b14625372068da95390b02a32a2f"
 dependencies = [
  "anyhow",
- "base64",
+ "base64 0.23.1",
  "educe",
  "hex",
  "num_enum",
@@ -1892,7 +1898,7 @@ version = "0.12.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d19c46a6fdd48bc4dab94b6103fccc55d34c67cc0ad04653aad4ea2a07cd7bbb"
 dependencies = [
- "base64",
+ "base64 0.22.1",
  "bytes",
  "futures-core",
  "futures-util",
@@ -1978,7 +1984,7 @@ version = "2.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "29993a25686778eb88d4189742cd713c9bce943bc54251a33509dc63cbacf73d"
 dependencies = [
- "base64",
+ "base64 0.22.1",
  "rustls-pki-types",
 ]
 
