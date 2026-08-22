@@ -1,17 +1,16 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    id("com.android.application") version "8.13.2" apply false
-    id("com.android.library") version "8.13.2" apply false
-    id("org.mozilla.rust-android-gradle.rust-android") version "0.9.6" apply false
+    id("com.android.application") version "9.0.1" apply false
+    id("com.android.library") version "9.0.1" apply false
+    id("org.mozilla.rust-android-gradle.rust-android") version "0.10.0" apply false
 }
 
 buildscript {
     dependencies {
-        // Override a transitive dependency from AGP on version 1.77 of the BouncyCastle crypto
-        // provider to address CVE-2024-34447.
-        classpath("org.bouncycastle:bcpkix-jdk18on:1.85")
-        classpath("org.bouncycastle:bcprov-jdk18on:1.85")
-        classpath("org.bouncycastle:bcutil-jdk18on:1.85")
+        constraints {
+            // Avoid https://github.com/advisories/GHSA-j288-q9x7-2f5v
+            classpath("org.apache.commons:commons-lang3@3.18.0")
+        }
     }
 }
 
