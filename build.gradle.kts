@@ -2,7 +2,7 @@
 plugins {
     id("com.android.application") version "9.0.0" apply false
     id("com.android.library") version "9.0.0" apply false
-    id("org.mozilla.rust-android-gradle.rust-android") version "0.9.6" apply false
+    id("org.mozilla.rust-android-gradle.rust-android") version "0.10.0" apply false
 }
 
 buildscript {
