@@ -7,11 +7,10 @@ plugins {
 
 buildscript {
     dependencies {
-        // Override a transitive dependency from AGP on version 1.77 of the BouncyCastle crypto
-        // provider to address CVE-2024-34447.
-        classpath("org.bouncycastle:bcpkix-jdk18on:1.85")
-        classpath("org.bouncycastle:bcprov-jdk18on:1.85")
-        classpath("org.bouncycastle:bcutil-jdk18on:1.85")
+        constraints {
+            // Avoid https://github.com/advisories/GHSA-j288-q9x7-2f5v
+            classpath("org.apache.commons:commons-lang3@3.18.0")
+        }
     }
 }
 
