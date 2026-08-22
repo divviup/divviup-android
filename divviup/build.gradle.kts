@@ -76,6 +76,11 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
     androidTestImplementation("com.squareup.okhttp3:mockwebserver3:5.3.2")
     androidTestImplementation("com.squareup.okhttp3:mockwebserver3-junit4:5.3.2")
+
+    constraints {
+        // Avoid https://github.com/advisories/GHSA-j288-q9x7-2f5v
+        api("org.apache.commons:commons-lang3:3.18.0")
+    }
 }
 
 val rustTargets: List<String> by rootProject.extra
