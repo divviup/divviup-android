@@ -1,3 +1,6 @@
+import com.android.build.gradle.internal.api.DefaultAndroidLibrarySourceSet
+import org.gradle.api.internal.FactoryNamedDomainObjectContainer
+
 plugins {
     id("com.android.library")
     id("org.mozilla.rust-android-gradle.rust-android")
@@ -109,7 +112,11 @@ afterEvaluate {
     android.libraryVariants.forEach { variant ->
         val capitalizedVariantName = variant.name.replaceFirstChar { it.uppercase() }
         tasks.register<Javadoc>("generate${capitalizedVariantName}Javadoc") {
-            source = android.sourceSets["main"].java.getSourceFiles()
+            // Workaround for https://issuetracker.google.com/issues/550220873:
+            @Suppress("UNCHECKED_CAST")
+            var sourceSets = android.sourceSets as FactoryNamedDomainObjectContainer<DefaultAndroidLibrarySourceSet>
+            source = sourceSets["main"].java.getSourceFiles()
+
             classpath += files(android.bootClasspath)
             classpath += files(variant.compileConfiguration)
             classpath += files(documentation)
