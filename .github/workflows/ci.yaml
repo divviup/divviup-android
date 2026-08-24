@@ -78,4 +78,19 @@ jobs:
       uses: actions/dependency-review-action@v5
       with:
         config-file: './.github/dependency-review-config.yml'
-        allow-ghsas: GHSA-735f-pc8j-v9w8  # This is for a protobuf-java DoS vulnerability. This is only used in tests, and is thus not relevant.
+        # GHSA-735f-pc8j-v9w8: This is for a protobuf-java DoS vulnerability.
+        # This is only used in tests, and is thus not relevant.
+        #
+        # GHSA-j288-q9x7-2f5v: This is for a commons-lang3 vulnerability.  This
+        # dependency is introduced by AGP. We use dependency constraints to
+        # upgrade to a fixed version where possible, but AGP also adds a
+        # dependency in a dynamically-generated configuration with an internal
+        # name, which we can't readily affect via dependency constraints. At
+        # any rate, this vulnerability is not relevant to us, because we don't
+        # load untrusted code in the classpath.
+        #
+        # GHSA-r937-wjx7-w2jp: This is a vulnerability in kotlin-gradle-plugin
+        # related to unsafe deserialization of build cache metadata. We already
+        # set cache-disabled to true in CI, so we are not affected. A fix is
+        # only available in beta and release candidate versions currently.
+        allow-ghsas: GHSA-735f-pc8j-v9w8, GHSA-j288-q9x7-2f5v, GHSA-r937-wjx7-w2jp
