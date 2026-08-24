@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace = "org.divviup.commontest"
-    compileSdk = 34
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 21
@@ -23,8 +23,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_1_9
+        targetCompatibility = JavaVersion.VERSION_1_9
     }
 }
 
