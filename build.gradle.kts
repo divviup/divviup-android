@@ -9,7 +9,7 @@ buildscript {
     dependencies {
         constraints {
             // Avoid https://github.com/advisories/GHSA-j288-q9x7-2f5v
-            classpath("org.apache.commons:commons-lang3:3.18.0")
+            classpath("org.apache.commons:commons-lang3:3.20.0")
         }
     }
 }
