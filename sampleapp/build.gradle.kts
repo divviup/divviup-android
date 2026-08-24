@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace = "org.divviup.sampleapp"
-    compileSdk = 34
+    compileSdk = 37
 
     ndkVersion = findProperty("ndkVersion") as String
 

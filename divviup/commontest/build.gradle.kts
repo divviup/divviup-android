@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace = "org.divviup.commontest"
-    compileSdk = 34
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 21
