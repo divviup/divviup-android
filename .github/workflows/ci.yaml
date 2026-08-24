@@ -88,4 +88,9 @@ jobs:
         # name, which we can't readily affect via dependency constraints. At
         # any rate, this vulnerability is not relevant to us, because we don't
         # load untrusted code in the classpath.
-        allow-ghsas: GHSA-735f-pc8j-v9w8, GHSA-j288-q9x7-2f5v
+        #
+        # GHSA-r937-wjx7-w2jp: This is a vulnerability in kotlin-gradle-plugin
+        # related to unsafe deserialization of build cache metadata. We already
+        # set cache-disabled to true in CI, so we are not affected. A fix is
+        # only available in beta and release candidate versions currently.
+        allow-ghsas: GHSA-735f-pc8j-v9w8, GHSA-j288-q9x7-2f5v, GHSA-r937-wjx7-w2jp
