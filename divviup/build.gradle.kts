@@ -112,6 +112,8 @@ afterEvaluate {
     android.libraryVariants.forEach { variant ->
         val capitalizedVariantName = variant.name.replaceFirstChar { it.uppercase() }
         tasks.register<Javadoc>("generate${capitalizedVariantName}Javadoc") {
+            description = "Generate documentation pages"
+
             // Workaround for https://issuetracker.google.com/issues/550220873:
             @Suppress("UNCHECKED_CAST")
             var sourceSets = android.sourceSets as FactoryNamedDomainObjectContainer<DefaultAndroidLibrarySourceSet>
