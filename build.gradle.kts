@@ -1,7 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    id("com.android.application") version "9.3.2" apply false
-    id("com.android.library") version "9.3.2" apply false
+    id("com.android.application") version "9.4.0" apply false
+    id("com.android.library") version "9.4.0" apply false
     id("org.mozilla.rust-android-gradle.rust-android") version "0.10.0" apply false
 }
 
@@ -10,6 +10,10 @@ buildscript {
         constraints {
             // Avoid https://github.com/advisories/GHSA-j288-q9x7-2f5v
             classpath("org.apache.commons:commons-lang3:3.20.0")
+            // Avoid https://github.com/advisories/GHSA-wg6q-6289-32hp
+            classpath("org.bouncycastle:bcpkix-jdk18on:1.84")
+            classpath("org.bouncycastle:bcprov-jdk18on:1.84")
+            classpath("org.bouncycastle:bcutil-jdk18on:1.84")
         }
     }
 }
