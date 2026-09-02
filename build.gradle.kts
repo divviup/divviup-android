@@ -11,9 +11,9 @@ buildscript {
             // Avoid https://github.com/advisories/GHSA-j288-q9x7-2f5v
             classpath("org.apache.commons:commons-lang3:3.20.0")
             // Avoid https://github.com/advisories/GHSA-wg6q-6289-32hp
-            classpath("org.bouncycastle:bcpkix-jdk18on:1.84")
-            classpath("org.bouncycastle:bcprov-jdk18on:1.84")
-            classpath("org.bouncycastle:bcutil-jdk18on:1.84")
+            classpath("org.bouncycastle:bcpkix-jdk18on:1.85")
+            classpath("org.bouncycastle:bcprov-jdk18on:1.85")
+            classpath("org.bouncycastle:bcutil-jdk18on:1.85")
         }
     }
 }
