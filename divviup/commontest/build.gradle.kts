@@ -29,8 +29,8 @@ android {
 }
 
 dependencies {
-    implementation("com.squareup.okhttp3:mockwebserver3:5.5.0")
-    implementation("com.squareup.okhttp3:mockwebserver3-junit4:5.5.0")
+    implementation("com.squareup.okhttp3:mockwebserver3:5.5.1")
+    implementation("com.squareup.okhttp3:mockwebserver3-junit4:5.5.1")
 
     constraints {
         // Avoid https://github.com/advisories/GHSA-j288-q9x7-2f5v
