@@ -43,8 +43,9 @@ jobs:
         cache-disabled: true
     - name: Setup Rust
       id: rust-toolchain
-      uses: dtolnay/rust-toolchain@stable
+      uses: dtolnay/rust-toolchain@master
       with:
+        toolchain: stable
         targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
         components: clippy, rustfmt
     - name: Install cargo-binstall
