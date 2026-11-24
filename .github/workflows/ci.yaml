@@ -55,7 +55,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Rust caching
-      uses: Swatinem/rust-cache@v2
+      uses: Swatinem/rust-cache@v2.9.3
       with:
         key: "${{ steps.os-version.outputs.release }}-${{ steps.rust-toolchain.outputs.cachekey }}-${{ steps.ndk.outputs.ndk_version }}"
         workspaces: divviup/rust
@@ -76,7 +76,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v7.0.1
     - name: Dependency review
-      uses: actions/dependency-review-action@v5
+      uses: actions/dependency-review-action@v5.0.1
       with:
         config-file: './.github/dependency-review-config.yml'
         # GHSA-735f-pc8j-v9w8: This is for a protobuf-java DoS vulnerability.
