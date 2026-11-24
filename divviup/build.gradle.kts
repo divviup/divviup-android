@@ -85,10 +85,10 @@ dependencies {
         api("org.apache.commons:commons-lang3:3.21.0")
         // Avoid https://github.com/advisories/GHSA-wg6q-6289-32hp
         api("org.bouncycastle:bcpkix-jdk18on:1.86")
-        api("org.bouncycastle:bcprov-jdk18on:1.86")
+        api("org.bouncycastle:bcprov-jdk18on:1.87")
         api("org.bouncycastle:bcutil-jdk18on:1.86")
         androidLintTool("org.bouncycastle:bcpkix-jdk18on:1.86")
-        androidLintTool("org.bouncycastle:bcprov-jdk18on:1.86")
+        androidLintTool("org.bouncycastle:bcprov-jdk18on:1.87")
         androidLintTool("org.bouncycastle:bcutil-jdk18on:1.86")
     }
 }
